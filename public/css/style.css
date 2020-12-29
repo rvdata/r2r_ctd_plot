@@ -1,0 +1,133 @@
+.block {
+  display: block;
+  width: 40%;
+  border: none;
+  background-color: #4169E1;
+  color: white;
+  padding: 14px 28px;
+  font-size: 30px;
+  cursor: pointer;
+  text-align: center;
+  margin-left: 30%;
+  margin-bottom: 1%;
+  border-radius: 10px;
+}
+
+.block.hover, .block:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.block.active, .block:active {
+  display: block;
+  width: 30%;
+  border: none;
+  background-color: #416ddd;
+  color: green;
+  padding: 14px 28px;
+  font-size: 30px;
+  cursor: pointer;
+  text-align: center;
+  margin-left: 30%;
+  margin-bottom: 1%;
+  border-radius: 10px;
+}
+
+.bigbutton {
+  display: block;
+  width: 40%;
+  border: none;
+  background-color: #0D6B9A;
+  color: white;
+  padding: 14px 28px;
+  font-size: 30px;
+  cursor: pointer;
+  text-align: center;
+ # margin-left: 30%;
+ # margin-bottom: 1%;
+  border-radius: 10px;
+}
+
+.bigbutton.hover, .bigbutton:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.bigbutton.active, .bigbutton:active {
+  display: block;
+  width: 40%;
+  border: none;
+  background-color: #0D339A;
+  color: green;
+  padding: 14px 28px;
+  font-size: 30px;
+  cursor: pointer;
+  text-align: center;
+#  margin-left: 30%;
+  margin-bottom: 1%;
+  border-radius: 10px;
+}
+
+.bigbutton.focus, .bigbutton:focus {
+  display: block;
+  width: 40%;
+  border: none;
+  background-color: #0D339A;
+  color: white;
+  padding: 14px 28px;
+  font-size: 30px;
+  cursor: pointer;
+  text-align: center;
+#  margin-left: 30%;
+  margin-bottom: 1%;
+  border-radius: 10px;
+}
+
+.scrollable {
+  display: block;
+  width: 40%;
+  border: none;
+  background-color: #b17df5;
+  color: black;
+  padding: 14px 28px;
+  font-size: 25px;
+  cursor: pointer;
+  text-align: center;
+ # margin-left: 30%;
+ # margin-bottom: 1%;
+  border-radius: 10px;
+}
+.scrollable.hover, .scrollable:hover {
+  background-color: #91EBEE;
+  color: white;
+  border: none;
+}
+.scrollable.focus, .scrollable:focus {
+  display: block;
+  width: 40%;
+  border: none;
+#  background-color: #33FF44;
+  background-color: #91EBEE;
+  color: green;
+  padding: 14px 28px;
+  font-size: 30px;
+  cursor: pointer;
+  text-align: center;
+#  margin-left: 30%;
+  margin-bottom: 1%;
+  border-radius: 10px;
+}
+.scrollable.active, .scrollable:active {
+  display: block;
+  width: 40%;
+  border: none;
+  background-color: #91EBEE;
+  color: green;
+  padding: 14px 28px;
+  font-size: 30px;
+  cursor: pointer;
+  text-align: center;
+#  margin-left: 30%;
+  margin-bottom: 1%;
+  border-radius: 10px;
+}
