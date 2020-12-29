@@ -3,7 +3,6 @@
 #or ./ctd_plot.pl get -v '/?filename=ar44027_1db.cnv'
 use Mojolicious::Lite -signatures;
 use Class::Struct;
-use CGI qw(escapeHTML);
 use lib qw(lib);
 use CtdPlot::Model::InstrListFromCNV;
 use CtdPlot::Model::CNV2CSV;
