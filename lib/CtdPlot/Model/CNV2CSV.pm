@@ -34,13 +34,15 @@ sub convert  ( $self, $in_file, $out_file, $aref) {
         print STDERR "\$datadir/\$file_in= $in_file\n" if ($Debug);
         #print data file header comma seperated
         # pointer to first element of array
-        my $k = $aref->[0];
-        for($index= 0; $index < $num_instruments-1; $index++){
-                $k = $aref->[$index];
-                printf OUT ("%s,", $k->name);
+        my $k = $aref->[0]; 
+	for($index= 0; $index < $num_instruments; $index++){
+	       	$k = $aref->[$index];
+                if( $index < $num_instruments-1){
+                        printf OUT ("%s,", $k->name);
+                } else {
+                        printf OUT ("%s", $k->name);
+                }
         }
-        $k = $aref->[$num_instruments-1];
-	#printf OUT ("%s\n", $k->name);
         $cap_file = uc($_[0]);
         while (<IN>)
         {
