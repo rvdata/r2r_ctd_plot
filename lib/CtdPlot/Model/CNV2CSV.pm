@@ -34,24 +34,27 @@ sub convert  ( $self, $in_file, $out_file, $aref) {
         print STDERR "\$datadir/\$file_in= $in_file\n" if ($Debug);
         #print data file header comma seperated
         # pointer to first element of array
-        my $k = $aref->[0]; 
-	for($index= 0; $index < $num_instruments; $index++){
-	       	$k = $aref->[$index];
-                if( $index < $num_instruments-1){
-                        printf OUT ("%s,", $k->name);
-                } else {
-                        printf OUT ("%s", $k->name);
-                }
+        my $k = $aref->[0];
+        for($index= 0; $index < $num_instruments; $index++){
+                $k = $aref->[$index];
+		if( $index < $num_instruments-1){
+		       	printf OUT ("%s,", $k->name);
+		} else {
+		       	printf OUT ("%s", $k->name);
+		}
         }
+	#$k = $aref->[$index];
+	#printf OUT ("%s\n", $k->name);
+	printf OUT ("\n");
         $cap_file = uc($_[0]);
         while (<IN>)
         {
                 if(  ($numb, $var) = /\# name (\d{1,2}) = (\D.*): / )
- {
+		{
                 $var =~ tr/\//_/;                                       #  change "/" to "_"
                 $var =~ s/a-.00/a_T/;
                 $ctd_var{$var} =  $numb;
-                #print STDERR "\$ctd_var{$var} = $ctd_var{$var}\n" if ($Debug);
+		#print STDERR "\$ctd_var{$var} = $ctd_var{$var}\n" if ($Debug);
                 if ( ($ctd_var{t190C} != 0)  && ($ctd_var{sal11} != 0 ))
                         {
                                 $extra = 1;

@@ -47,7 +47,8 @@
             instrument["time"].addName("time");
        	    instrument["time"].addUnits("Sample");
        	    instrument["time"].addVariable("Time");
-    makeplot();
+	    
+            makeplot();
 </script>
 <!--default_plots -->
 <table  cols=2 align="center">

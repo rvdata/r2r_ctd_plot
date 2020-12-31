@@ -1,0 +1,40 @@
+select {
+  width: 50%;
+  height: 70px;
+  font-size: 100%;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 0;
+  background-color: #00BCC6;
+  border-bottom: 10px solid #0AD7AB;
+  border-top: 10px solid #0AD7AB; 
+  border-left: 10px solid #0AD7AB; 
+  border-right: 10px solid #0AD7AB; 
+  color: white;
+  padding: 10px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 10px;
+}
+/* For IE <= 11 */
+select::-ms-expand {
+  display: none; 
+}
+select:hover,
+select:focus {
+  color: black;
+  background-color: #0AD7AB;
+  border-bottom: 10px solid #98EC87; 
+  border-top: 10px solid #98EC87; 
+  border-left: 10px solid #98EC87; 
+  border-right: 10px solid #98EC87; 
+  }
+table.center {
+  margin-left: auto; 
+  margin-right: auto;
+}
+.grid-parent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
