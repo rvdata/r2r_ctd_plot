@@ -1,0 +1,8 @@
+Web app to display Seabird Scientific data.
+Dependencies: Mojolicious, Plotly.js, Multiselect.js.
+
+to run as a background process:
+nohup ./ctdplot.pl daemon -l http://<ip_addr>:<port> &
+
+Note even though it says it's a daemon, it isn't. So need to run
+as a background process with nohup.
