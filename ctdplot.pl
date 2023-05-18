@@ -20,7 +20,6 @@ foreach my $arg (@ARGV) {
     $index++;
 }
 
-
 struct Instrument => {
         name => '$',
         instr_number => '$',
@@ -34,15 +33,28 @@ my @cnv_info;
 
 get '/' => sub ($c) {
   #get cnv file name from user, initially equal to ''
-  my $filename = $c->param('filename');
+  #warn Data::Dumper->new([\$c->req()->params()->to_hash()],[qw(*text)])->Dump(),' ';
+  #warn Data::Dumper->Dump([\$c->req()->params()->names],[qw(*params)]),' ';
+  my $filename;
+  for my $key (@{$c->req()->params()->names}) {
+      #warn Data::Dumper->new([\$key,\$c->req()->every_param($key)],[qw(*key *values)])->Dump(),' ';
+      my $station_array_ref = $c->req()->every_param($key);
+      foreach(@$station_array_ref){
+          print STDERR ("station: ".$_."\n");
+          $filename = $_;
+      }
+  };
+  print STDERR ("filename ".$filename."\n");
+
+  #  my $filename = $c->param('file_selection_ID');
 
   #get list of cnv files
-  my $datadir = "/home/data/armstrong/ctd/";
   opendir DATADIR, "$datadir" or die "no data directory\n";
   my @stafiles =  sort grep (/cdn$|cnv$/, readdir (DATADIR));
   close DATADIR;
 
-  my $input_filename = "${datadir}/${filename}";
+  my $input_filename = "${datadir}${filename}";
+  print STDERR ("full filename ".$input_filename."\n");
   # Helper to lazy initialize and store instrument list object model
   helper instr_list => sub { state $instr_list = CtdPlot::Model::InstrListFromCNV->new };
   #get list of instruments from cnv file
@@ -61,4 +73,6 @@ get '/' => sub ($c) {
   $c->render( template		=> 'index');
 };
 
+#app->start('daemon', '-l', $ip_and_port);
+app->log->debug('Starting application');
 app->start;
