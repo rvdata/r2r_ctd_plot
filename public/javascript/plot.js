@@ -19,8 +19,8 @@ instrument = [];
 
 function onLoadFunction() {
 	//turn off loader
-	document.getElementById("loader").style.display = "none";
-        document.getElementById("myDiv").style.display = "block";
+//	document.getElementById("loader").style.display = "none";
+ //       document.getElementById("myDiv").style.display = "block";
 }
 
 function Line(color) {
@@ -216,6 +216,31 @@ var LayoutTime = function(title, xLabel, yLabel, deltaT) {
 	};
 };
 
+function displayMultiFileSelect() {
+	//display multi-file select menu
+	var x_axis_values; //active station
+	var y_axis_values; //list of all stations selected
+	$x_axis_values = [];
+	$y_axis_values = []; 
+
+	// multi-Selection form for Stations
+        $(document).ready(function(){
+		$('#file_selection_ID' ).multi();
+	});
+	// Selection form
+	$( '#file_selection_ID' ).multi({
+		non_selected_header: 'Available Stations',
+		selected_header: 'Selected Stations'
+	});
+	// Selection form
+	$( '#file_selection_ID' ).multi({
+		// enable search
+		enable_search: true,
+		// placeholder of search input
+		search_placeholder: 'Search...'
+	});
+}; 
+
 function displayMultiSelect() {
 	//display multi select menu
 	var x_axis_values; //active instrument
@@ -263,7 +288,7 @@ function displayMultiSelect() {
 function makeplot() {
 	//grap csv data and hand off to plotly.js
 	/* turn loader on */
-        document.getElementById("loader").style.display = "";
+        //document.getElementById("loader").style.display = "";
         document.getElementById("myDiv").style.display = "";
 
 	Plotly.d3.csv("ctd.dat", function(data){
@@ -273,8 +298,8 @@ function makeplot() {
 
 function makeCustomPlot() {
 	/* turn loader on */
-        document.getElementById("loader").style.display = "";
-        document.getElementById("myDiv").style.display = "";
+        //document.getElementById("loader").style.display = "";
+        //document.getElementById("myDiv").style.display = "";
 
 	Plotly.d3.csv("../ctd.dat", function(data){
 		processCustomData(data)
@@ -749,9 +774,9 @@ function processDefaultData(allRows) {
 	}
 
 
-        var overlayID = document.getElementById("overlay");
-	document.getElementById("loader").style.display = "none";
-	overlayID.style.display="none";
+ //       var overlayID = document.getElementById("overlay");
+//	document.getElementById("loader").style.display = "none";
+//	overlayID.style.display="none";
 }
 
 
@@ -846,10 +871,11 @@ function processCustomData(allRows) {
 		}
 	}
 
-        var overlayID = document.getElementById("overlay");
-	document.getElementById("loader").style.display = "none";
-	overlayID.style.display="none";
+//        var overlayID = document.getElementById("overlay");
+//	document.getElementById("loader").style.display = "none";
+//	overlayID.style.display="none";
 }
+
 
 function makePlotlyGraph(graph,div_id){
 	//makes a plot from a Graph object.
