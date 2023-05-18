@@ -6,24 +6,21 @@
 <input type="radio" id="time_radio_id" name="timeSel" value="0" display="inline-block"onclick="makeplot();">Time-based Graphs</input><br>
 <input type="radio" id="time_radio_id" name="timeSel" value="0" display="inline-block"onclick="makeplot();">Multi-Station Graphs</input>
 </p>
-<div id="file_select_form_id"  class="child"  align="left">
-        <table  style="width:100%">
-            <form class="form-card" action="">
+<div id="file_select_form_id"  class="child"  align="center">
+            <form class="form-card;style=width:900px;align=center" action="">
                 <fieldset class="form-fieldset">
-                    <legend class="form-legend">select up to Five Stations</legend>
-                    <p style="font-size:20px;">
-                    <label for="file_selection_ID">Select</label>
-                    <select multiple multiple="multiple" name="file_selection_ID[]" id="file_selection_ID">
+                    <p  style="width:900px;font-size:20px;">
+                    <label for="file_selection_ID">Select Up to 6 Stations</label>
+                    <select multiple multiple="multiple" name="file_selection_ID[]" id="file_selection_ID" style="width: 200px;">
                     % foreach my $file (@$stafilelist) {
                         <option value="<%= $file %>"><%= $file %></option>
                     %}
                     <option value="time">Time</>
+                    <input type="submit" value="Submit" style="font-size:40px">
                 <br></select>
                </fieldset>
                 <br>
-                <input type="submit" value="Submit">
            </form>
-       </table>
 </div>
 <script type="text/javascript">
 displayMultiFileSelect()
@@ -51,7 +48,6 @@ displayMultiFileSelect()
        	    instrument["time"].addUnits("Sample");
        	    instrument["time"].addVariable("Time");
 	    
-            makeplot();
 </script>
 <h1 style="text-align:center;">Select Variables to Plot</h1>
 <div class="parent grid-parent">
