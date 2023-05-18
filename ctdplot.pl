@@ -7,6 +7,19 @@ use lib qw(lib);
 use CtdPlot::Model::InstrListFromCNV;
 use CtdPlot::Model::CNV2CSV;
 
+my $datadir = "/home/data/armstrong/ctd/";
+my $index=0;
+#if -d option given, override datadir and remove from ARGV before passing to mojo
+foreach my $arg (@ARGV) {
+    if($ARGV[$index] eq "-d"){
+       $datadir = $ARGV[$index+1];
+       splice(@ARGV, $index, 1);
+       splice(@ARGV, $index, 1);
+       last;
+    }
+    $index++;
+}
+
 
 struct Instrument => {
         name => '$',
