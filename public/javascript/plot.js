@@ -16,6 +16,7 @@ var Instrument = function() {
 }
 
 instrument = [];
+stations_selected = [];
 
 function onLoadFunction() {
 	//turn off loader
@@ -296,10 +297,14 @@ function makeplot() {
 	}); 
 }; 
 
-function makeCustomPlot() {
+function makeCustomPlot(stations_selected) {
 	/* turn loader on */
         //document.getElementById("loader").style.display = "";
         //document.getElementById("myDiv").style.display = "";
+	for(i=0; i<stations_selected.length; i++){
+		console.log(stations_selected[i]);
+	}
+
 
 	Plotly.d3.csv("../ctd.dat", function(data){
 		processCustomData(data)
@@ -802,7 +807,7 @@ function processCustomData(allRows) {
         });
 
 
-	//Get x data from cnv file
+	//Get x data from csv file
        var xData = [];
        for (index = 0; index < (x_axis_values.length / 2); index++) {
 	       var xVariable = instrument[x_axis_values[index]].name;
@@ -813,7 +818,7 @@ function processCustomData(allRows) {
 	       }
 	       xData[xVariable] =  rawData;
        }
-	//Get y data from cnv file
+	//Get y data from csv file
        var yData = [];
 	var isTimePlot = false;
 	for (index = 0; index < (y_axis_values.length / 2); index++) {

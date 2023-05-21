@@ -26,8 +26,6 @@
 displayMultiFileSelect()
 </script>
 
-<!-- begn if(fileSelection) -->
-% if($fileSelection){
 <h4 style="text-align:center;"> 
 	<p></p>
 
@@ -94,14 +92,15 @@ displayMultiFileSelect()
 </div>
 <script type="text/javascript">
 displayMultiSelect()
+% foreach my $station (@$stationslist) {
+stations_selected.push("<%= $station %>");
+% }
 </script>
 <div align="center">
-<button type="button" class="bigbutton" onClick="makeCustomPlot()">Display Custom Plot</button>
+	<button type="button" class="bigbutton" onClick="makeCustomPlot(stations_selected)">Display Custom Plot</button>
 </div>
 <table  cols=2 align="center">
    <tr>
       <td><div id="custom_plot" style="height: 570px;"></div></td>
    </tr>
 </table>
-%}
-<!-- end if(fileSelection) -->

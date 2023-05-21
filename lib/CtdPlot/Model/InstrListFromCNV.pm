@@ -21,7 +21,7 @@ sub get ( $self, $file_in) {
                 if(/\# name/){
                         ( my $first_half, my $second_half ) = split(':');
                         ($numb, $instrument_name) = ($first_half =~ /\# name (\d{1,2}) = (\D.*)/);
-                        print STDERR "NUMBER: $numb " if ($Debug);
+                        print STDERR "NUMBER: $numb\n" if ($Debug);
                         $instrument_name =~ tr/\//_/;   #  change "/" to "_"
                         $instrument_name =~ tr/-/_/;    #  change "-" to "_"
                         $instrument_name =~ s/a-.00/a_T/; #change -. to _T
