@@ -22,7 +22,7 @@
            </form>
 </div>
 <div align="center">
-	<button type="button" id="cnvSubmit" class="bigbutton">Submit Stations</button>
+	<button type="button" id="cnvSubmit" class="bigbutton" onclick="submitAll()">Submit Stations</button>
 </div>
 <script type="text/javascript">
 displayMultiFileSelect()
@@ -102,19 +102,22 @@ displayMultiSelect()
 % foreach my $station (@$stationslist) {
 stations_selected.push("<%= $station %>");
 % }
-$(document).ready(function() {
-    $("#cnvSubmit").click(function(){
-        $('#cnvselect').submit();
+function submitAll() {
+    // Construct data string
+    var dataString = $("#cnvselect, #xaxis, #yaxis").serialize();
+
+    // Log in console so you can see the final serialized data sent to AJAX
+    console.log(dataString);
+
+        //url: 'ctdplot.pl',
+    $.ajax( {
+        type: 'GET',
+        data: dataString,
+        success: function(data) {
+            console.log(data);
+            $('#message').html(data);
+        }
     });
-});
-$(document).ready(function() {
-    $("#xaxisSubmit").click(function(){
-        $('#xaxis').submit();
-    });
-});
-$(document).ready(function() {
-    $("#yaxisSubmit").click(function(){
-        $('#yaxis').submit();
-    });
-});
+}
 </script>
+

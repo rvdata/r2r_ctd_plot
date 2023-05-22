@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="/css/ctd.css">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/multi/dist/multi.min.css">
-  <script type="text/javascript" src="/javascript/jquery-3.2.1.slim.min.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
   <script type="text/javascript" src="/multi/dist/multi.min.js"></script>
 
   
