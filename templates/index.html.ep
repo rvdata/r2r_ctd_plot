@@ -7,9 +7,9 @@
 <input type="radio" id="time_radio_id" name="timeSel" value="0" display="inline-block"onclick="makeplot();">Multi-Station Graphs</input>
 </p>
 <div id="file_select_form_id"  class="child"  align="center">
-            <form class="form-card;style=width:900px;align=center" action="">
+            <form class="form-card">
                 <fieldset class="form-fieldset">
-                    <p  style="width:900px;font-size:20px;">
+                    <p  style="font-size:20px;">
                     <label for="file_selection_ID">Select Up to 6 Stations</label>
                     <select multiple multiple="multiple" name="file_selection_ID[]" id="file_selection_ID" style="width: 200px;">
                     % foreach my $file (@$stafilelist) {

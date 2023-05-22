@@ -40,6 +40,7 @@ sub get ( $self, $file_in) {
                         @extra_fields = split(',',$extra_info);
                         $insts[$numb] = Instrument->new();
                         $insts[$numb]->name($instrument_name);
+                        $insts[$numb]->number($numb);
                         $insts[$numb]->units($units);
                         $insts[$numb]->quantity_measured($extra_info);
                 }

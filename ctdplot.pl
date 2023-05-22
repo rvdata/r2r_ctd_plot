@@ -6,6 +6,7 @@ use Class::Struct;
 use lib qw(lib);
 use CtdPlot::Model::InstrListFromCNV;
 use CtdPlot::Model::CNV2CSV;
+use CtdPlot::Model::getDataFromCNV;
 #use CtdPlot::Model::CNV2CSVString;
 
 my $datadir = "/home/data/armstrong/ctd/";
@@ -24,7 +25,7 @@ foreach my $arg (@ARGV) {
 
 struct Instrument => {
         name => '$',
-        instr_number => '$',
+        number => '$',
         quantity_measured => '$',
         units => '$',
 };
@@ -32,55 +33,46 @@ struct Instrument => {
 my @instruments;
 my $instruments = [];
 my @cnv_info;
-my @stations_selected;
+my @all_cnv_info;
+my @cnv_files_selected = ();
 
 get '/' => sub ($c) {
   #get entire list of cnv files from data dir for user to select from
   opendir DATADIR, "$datadir" or die "no data directory\n";
-  my @stations =  sort grep (/cdn$|cnv$/, readdir (DATADIR));
+  my @cnv_filenames =  sort grep (/cdn$|cnv$/, readdir (DATADIR));
   close DATADIR;
 
+  #parse an arbitrary station to get instrument list, all stations must be same instrument list
+  if(@cnv_filenames){
+      my $cnv_filename = $cnv_filenames[0];
+      my $cnv_fullpath_name = "${datadir}${cnv_filename}";
+      helper instr_list => sub { state $instr_list = CtdPlot::Model::InstrListFromCNV->new };
+      #returns array of structs
+      @instruments = $c->instr_list->get($cnv_fullpath_name);
+  }
   #get list of selected stations from browser multiselect form
   for my $key (@{$c->req()->params()->names}) {
-      my $station_array_ref = $c->req()->every_param($key);
+      my $cnv_filename_array_ref = $c->req()->every_param($key);
       #reset stations selected so it doesn't double count
-      @stations_selected=();
-      foreach(@$station_array_ref){
-          print STDERR ("pushing station: ".$_."\n") if ($Debug);
-	  push(@stations_selected,$_);
+      @cnv_files_selected=();
+      foreach(@$cnv_filename_array_ref){
+	  push(@cnv_files_selected,$_);
       }
   };
 
-  #set first file as template to obtain instruments, they all should be the same
-  my $first_station = $stations_selected[0];
-  print STDERR ("first station ".$stations_selected[0]."\n");
-  
-  #create .dat and csv file for each cnv file
-  foreach my $station (@stations_selected) {
-      my @cnv_file;
-      print STDERR ("station selected: $station\n") if ($Debug);
-      my $dat_file = "public/$station".".dat";
-      printf STDERR ("dat file: %s\n", $dat_file) if ($Debug);
-      my $input_filename = "${datadir}$station";
-      print STDERR ("full path name: ".$input_filename."\n") if ($Debug);
-
-      #create list of instrument objects from cnv file
-      helper instr_list => sub { state $instr_list = CtdPlot::Model::InstrListFromCNV->new };
-      @instruments = $c->instr_list->get($input_filename);
-
-      #create csv file with instrument header for plotly
-      helper cnv2csv => sub { state $cnv2csv = CtdPlot::Model::CNV2CSV->new };
-      @cnv_info = $c->cnv2csv->convert($input_filename,$dat_file,\@instruments);
-  }
-  print STDERR ("stations: ");
-  foreach my $station (@stations_selected) {
-	  print STDERR ($station."\n");
+  foreach my $cnv_file (@cnv_files_selected) {
+      my $cnv_fullpath_name = "${datadir}$cnv_file";
+      #get data for each cnv file selected by user
+      my $instrument = $instruments[1];
+      helper cnvdata => sub { state $cnvdata = CtdPlot::Model::getDataFromCNV->new };
+      @cnv_info = $c->cnvdata->get_data($cnv_fullpath_name,$instrument);
+      push(@all_cnv_info,\@cnv_info);
   }
 
   #Send data to client 
-  $c->stash(fileSelection	=> $first_station);
-  $c->stash(stationslist	=> \@stations_selected);
-  $c->stash(stafilelist		=> \@stations);
+  $c->stash(fileSelection	=> $cnv_filenames[0]);
+  $c->stash(stationslist	=> \@cnv_files_selected);
+  $c->stash(stafilelist		=> \@cnv_filenames);
   $c->stash(instrumentlist	=> \@instruments);
   $c->stash(cnv_info		=> \@cnv_info);
   $c->render( template		=> 'index');

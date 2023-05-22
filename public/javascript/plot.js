@@ -297,19 +297,6 @@ function makeplot() {
 	}); 
 }; 
 
-function makeCustomPlot(stations_selected) {
-	/* turn loader on */
-        //document.getElementById("loader").style.display = "";
-        //document.getElementById("myDiv").style.display = "";
-	for(i=0; i<stations_selected.length; i++){
-		console.log(stations_selected[i]);
-	}
-
-
-	Plotly.d3.csv("../ctd.dat", function(data){
-		processCustomData(data)
-	}); 
-}; 
 
 function processDefaultData(allRows) {
 	//most graphs use prDM depth as the y-axis data set.
@@ -785,9 +772,24 @@ function processDefaultData(allRows) {
 }
 
 
+function makeCustomPlot(stations_selected) {
+	/* turn loader on */
+        //document.getElementById("loader").style.display = "";
+        //document.getElementById("myDiv").style.display = "";
+	for(i=0; i<stations_selected.length; i++){
+		console.log(stations_selected[i]);
+	}
+
+	filename = "../" + stations_selected[0] + ".dat";
+	Plotly.d3.csv(filename, function(data){
+		processCustomData(data)
+	}); 
+}; 
+
 function processCustomData(allRows) {
         //get list of x-axis variables from multi-selection drop-down list
         x_axis_values = $("#x_axis_ID").val();
+	console.log(x_axis_values);
         if (x_axis_values == "") {
                 alert("Instrument must be filled out");
                 return false;
