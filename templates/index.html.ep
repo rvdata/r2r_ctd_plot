@@ -7,20 +7,22 @@
 <input type="radio" id="time_radio_id" name="timeSel" value="0" display="inline-block"onclick="makeplot();">Multi-Station Graphs</input>
 </p>
 <div id="file_select_form_id"  class="child"  align="center">
-            <form class="form-card">
+            <form class="form-card" id="cnvselect">
                 <fieldset class="form-fieldset">
                     <p  style="font-size:20px;">
                     <label for="file_selection_ID">Select Up to 6 Stations</label>
-                    <select multiple multiple="multiple" name="file_selection_ID[]" id="file_selection_ID" style="width: 200px;">
+                    <select multiple="multiple" name="file_selection_ID[]" id="file_selection_ID" style="width: 200px;">
                     % foreach my $file (@$stafilelist) {
                         <option value="<%= $file %>"><%= $file %></option>
                     %}
                     <option value="time">Time</>
-                    <input type="submit" value="Submit" style="font-size:40px">
                 <br></select>
                </fieldset>
                 <br>
            </form>
+</div>
+<div align="center">
+	<button type="button" id="cnvSubmit" class="bigbutton">Submit Stations</button>
 </div>
 <script type="text/javascript">
 displayMultiFileSelect()
@@ -50,7 +52,7 @@ displayMultiFileSelect()
 <h1 style="text-align:center;">Select Variables to Plot</h1>
 <div class="parent grid-parent">
     <div id="instr_form_id"  class="child">
-    <form class="form-card">
+    <form class="form-card" id="xaxis">
         <fieldset class="form-fieldset">
             <legend class="form-legend">X-Axis</legend>
             <p style="font-size:20px;">
@@ -64,15 +66,11 @@ displayMultiFileSelect()
 
                 <br></select>
             </p>
-	  	   <p>
-               <input type="radio" name="diffS" value="1" checked="checked">Overlay Variables on One Graph</input><br>
-               <input type="radio" id="diff_id" name="diffS" value="0">Plot the Delta between Two Variables</input>
-            </p>
         </fieldset>
     </form>
     </div>
     <div id="instr_form_id2"  class="child">
-    <form class="form-card">
+    <form class="form-card" id="yaxis">
         <fieldset class="form-fieldset">
             <legend class="form-legend">Y-Axis</legend>
             <p style="font-size:20px;">
@@ -82,25 +80,41 @@ displayMultiFileSelect()
 		% foreach my $instr (@$instrumentlist) {
        	    		<option value="<%= $instr->name %>"><%= $instr->name %></>
 		%}                
-
-
               <br></select>
             </p>
         </fieldset>
     </form>
     </div>
 </div>
-<script type="text/javascript">
-displayMultiSelect()
-% foreach my $station (@$stationslist) {
-stations_selected.push("<%= $station %>");
-% }
-</script>
 <div align="center">
-	<button type="button" class="bigbutton" onClick="makeCustomPlot(stations_selected)">Display Custom Plot</button>
+	<button type="button" id="xaxisSubmit" class="bigbutton">Submit X-Axis</button>
+</div>
+<div align="center">
+	<button type="button" id="yaxisSubmit" class="bigbutton">Submit Y-Axis</button>
 </div>
 <table  cols=2 align="center">
    <tr>
       <td><div id="custom_plot" style="height: 570px;"></div></td>
    </tr>
 </table>
+<script type="text/javascript">
+displayMultiSelect()
+% foreach my $station (@$stationslist) {
+stations_selected.push("<%= $station %>");
+% }
+$(document).ready(function() {
+    $("#cnvSubmit").click(function(){
+        $('#cnvselect').submit();
+    });
+});
+$(document).ready(function() {
+    $("#xaxisSubmit").click(function(){
+        $('#xaxis').submit();
+    });
+});
+$(document).ready(function() {
+    $("#yaxisSubmit").click(function(){
+        $('#yaxis').submit();
+    });
+});
+</script>

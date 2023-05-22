@@ -35,6 +35,8 @@ my $instruments = [];
 my @cnv_info;
 my @all_cnv_info;
 my @cnv_files_selected = ();
+my $x_axis;
+my $y_axis;
 
 get '/' => sub ($c) {
   #get entire list of cnv files from data dir for user to select from
@@ -52,18 +54,40 @@ get '/' => sub ($c) {
   }
   #get list of selected stations from browser multiselect form
   for my $key (@{$c->req()->params()->names}) {
-      my $cnv_filename_array_ref = $c->req()->every_param($key);
+      print STDERR "$key:\n";
+      my $param_refs = $c->req()->every_param($key);
       #reset stations selected so it doesn't double count
-      @cnv_files_selected=();
-      foreach(@$cnv_filename_array_ref){
-	  push(@cnv_files_selected,$_);
+      if($key =~ /file_selection_ID/){
+          @cnv_files_selected=();
+          foreach (@$param_refs){
+	          print STDERR "cnv file: " ;
+	          print STDERR ;
+	          print STDERR "\n" ;
+		  #	  push(@cnv_files_selected,$parameter);
+	  }
+      }elsif($key =~ /x_axis/){
+          foreach (@$param_refs){
+	          print STDERR "x-axis: " ;
+	          print STDERR ;
+	          print STDERR "\n" ;
+	  }
+      }elsif($key =~ /y_axis/){
+          foreach (@$param_refs){
+	          print STDERR "y-axis: " ;
+	          print STDERR ;
+	          print STDERR "\n" ;
+	  }
+      }else{
+          print STDERR "ERROR" ;
+          print STDERR "\n" ;
       }
+
   };
 
   foreach my $cnv_file (@cnv_files_selected) {
       my $cnv_fullpath_name = "${datadir}$cnv_file";
       #get data for each cnv file selected by user
-      my $instrument = $instruments[1];
+      my $instrument = $x_axis;
       helper cnvdata => sub { state $cnvdata = CtdPlot::Model::getDataFromCNV->new };
       @cnv_info = $c->cnvdata->get_data($cnv_fullpath_name,$instrument);
       push(@all_cnv_info,\@cnv_info);
