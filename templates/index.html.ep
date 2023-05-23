@@ -86,12 +86,6 @@ displayMultiFileSelect()
     </form>
     </div>
 </div>
-<div align="center">
-	<button type="button" id="xaxisSubmit" class="bigbutton">Submit X-Axis</button>
-</div>
-<div align="center">
-	<button type="button" id="yaxisSubmit" class="bigbutton">Submit Y-Axis</button>
-</div>
 <table  cols=2 align="center">
    <tr>
       <td><div id="custom_plot" style="height: 570px;"></div></td>
