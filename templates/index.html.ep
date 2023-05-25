@@ -21,9 +21,6 @@
                </fieldset>
                 <br>
            </form>
-<div align="center">
-	<button type="button" id="cnvSubmit" class="bigbutton" onclick="submitAll()">Submit Stations</button>
-</div>
 <script type="text/javascript">
 displayMultiFileSelect()
 </script>
@@ -49,40 +46,32 @@ displayMultiFileSelect()
 </script>
 <h1 style="text-align:center;">Select Variables to Plot</h1>
 <div class="parent grid-parent">
-    <div id="instr_form_id"  class="child">
-    <form class="form-card" id="xaxis">
-        <fieldset class="form-fieldset">
             <legend class="form-legend">X-Axis</legend>
             <p style="font-size:20px;">
             <label for="y_axis_ID">Select One or More Variables</label>
-            <select multiple="multiple" name="y_axis_ID" id="y_axis_ID">
+            <select name="y_axis_ID" id="yaxis">
 
 		% foreach my $instr (@$instrumentlist) {
        	    		<option value="<%= $instr->name %>"><%= $instr->name %></>
 		%}
 	                <option value="time">Time</>
+		<option selected="prDM">prDM</option>
 
                 <br></select>
             </p>
-        </fieldset>
-    </form>
-    </div>
-    <div id="instr_form_id2"  class="child">
-    <form class="form-card" id="yaxis">
-        <fieldset class="form-fieldset">
             <legend class="form-legend">Y-Axis</legend>
             <p style="font-size:20px;">
             <label for="x_axis_ID">Select One Variable (or more if x=Time)</label>
-            <select multiple="multiple" name="x_axis_ID" id="x_axis_ID">
-
+            <select name="x_axis_ID" id="xaxis">
 		% foreach my $instr (@$instrumentlist) {
        	    		<option value="<%= $instr->name %>"><%= $instr->name %></>
 		%}                
+		<option selected="t090C">t090C</option>
               <br></select>
             </p>
-        </fieldset>
-    </form>
-    </div>
+</div>
+<div align="center">
+	<button type="button" id="cnvSubmit" class="bigbutton" onclick="submitAll()">Display Plot</button>
 </div>
 <table  cols=2 align="center">
    <tr>

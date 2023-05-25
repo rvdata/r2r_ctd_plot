@@ -42,12 +42,6 @@ struct( Plot => {
 
 my @instruments;
 my $instruments = [];
-my @x_values;
-my @y_values;
-my @cnv_files_selected = ();
-my $x_axis;
-my $y_axis;
-my @plots=();
 
 get '/' => sub ($c) {
   #get entire list of cnv files from data dir for user to select from
@@ -64,7 +58,12 @@ get '/' => sub ($c) {
       @instruments = $c->instr_list->get($cnv_fullpath_name);
   }
 
-  @cnv_files_selected=();
+  my @cnv_files_selected=();
+  my @plots=();
+  my @x_values=();
+  my @y_values=();
+  my $x_axis="";
+  my $y_axis="";
   #get list of selected stations from browser multiselect form
   for my $key (@{$c->req()->params()->names}) {
       print STDERR "$key:\n";

@@ -815,7 +815,10 @@ function processCustomData() {
 	var title;
 	var xLabal;
 	var yLabal;
-
+        
+        Object.keys(plot).forEach(key => {
+	    delete(graph);
+	});
 
         plot_num=0;
         Object.keys(plot).forEach(key => {
