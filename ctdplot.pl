@@ -64,13 +64,13 @@ get '/' => sub ($c) {
       @instruments = $c->instr_list->get($cnv_fullpath_name);
   }
 
+  @cnv_files_selected=();
   #get list of selected stations from browser multiselect form
   for my $key (@{$c->req()->params()->names}) {
       print STDERR "$key:\n";
       my $param_refs = $c->req()->every_param($key);
       #reset stations selected so it doesn't double count
       if($key =~ /file_selection_ID/){
-          @cnv_files_selected=();
           foreach (@$param_refs){
 	          print STDERR "cnv file: " ;
 	          print STDERR ;
@@ -123,9 +123,9 @@ get '/' => sub ($c) {
       foreach my $val (@x_values){
 	      push @{$plots[$index]->{x_values} }, $val;
       }
-      foreach my $val (@{$plots[$index]->{x_values} }){
-             print "$val\n";
-      }
+      #     foreach my $val (@{$plots[$index]->{x_values} }){
+      #       print "$val\n";
+      #}
 
       
       #find y instrument associated with x-axis name given from user

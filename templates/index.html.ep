@@ -1,5 +1,6 @@
 % layout 'default';
 % title 'CTD Stations';
+<div id=newcontent>
 <h1 style="text-align:center;">CTD Stations Available for Plotting</h1>
 <p>
 <input type="radio" name="timeSel" value="1" checked="checked" display="inline-block"onclick="makeplot();">Default Graphs</input><br>
@@ -88,7 +89,6 @@ displayMultiFileSelect()
       <td><div id="custom_plot" style="height: 570px;"></div></td>
    </tr>
 </table>
-<div id=newcontent>
 <script type="text/javascript">
 % foreach my $pl (@$plots) {
     console.log("<%= $pl->station %>");
@@ -123,7 +123,7 @@ function submitAll() {
         type: 'GET',
         data: dataString,
         success: function(data) {
-            console.log(data);
+//            console.log(data);
             $('#newcontent').html(data);
         }
     });

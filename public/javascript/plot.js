@@ -298,14 +298,15 @@ function displayMultiSelect() {
 	}); 
 	Object.keys(plot).forEach(key => {
 		console.log(key, plot[key].station);
-		console.log(key, plot[key].x_instrument.name);
+		console.log(key, plot[key].x_instrument);
 		console.log(key, plot[key].y_instrument);
-		let i = 0;
-		while (i < plot[key].x_values.length) {
-			console.log(plot[key].x_values[i]);
-			i++;
-		}
+		//let i = 0;
+	//	while (i < plot[key].x_values.length) {
+	//		console.log(plot[key].x_values[i]);
+	//		i++;
+	//	}
 	});
+	processCustomData();
 
 }; 
 
@@ -809,101 +810,30 @@ function makeCustomPlot(stations_selected) {
 	}); 
 }; 
 
-function processCustomData(allRows) {
-        //get list of x-axis variables from multi-selection drop-down list
-        x_axis_values = $("#x_axis_ID").val();
-	console.log(x_axis_values);
-        if (x_axis_values == "") {
-                alert("Instrument must be filled out");
-                return false;
-        }
-        $.each(x_axis_values, function (key, value) {
-                x_axis_values.push(value);
-        });
-
-        //get list of y-axis variables from multi-selection drop-down list
-        y_axis_values = $("#y_axis_ID").val();
-        if (y_axis_values == "") {
-                alert("Instrument must be filled out");
-                return false;
-        }
-        $.each(y_axis_values, function (key, value) {
-                y_axis_values.push(value);
-        });
-
-
-	//Get x data from csv file
-       var xData = [];
-       for (index = 0; index < (x_axis_values.length / 2); index++) {
-	       var xVariable = instrument[x_axis_values[index]].name;
-	       var rawData = [];
-	       for (var i=0; i<allRows.length; i++) {
-		       row = allRows[i];
-		       rawData.push( row[xVariable] );
-	       }
-	       xData[xVariable] =  rawData;
-       }
-	//Get y data from csv file
-       var yData = [];
-	var isTimePlot = false;
-	for (index = 0; index < (y_axis_values.length / 2); index++) {
-		if( y_axis_values[index] == "time" ){
-			isTimePlot = true;
-		}
-		var yVariable = instrument[y_axis_values[index]].name;
-		var rawData = [];
-		for (var i=0; i<allRows.length; i++) {
-			row = allRows[i];
-			rawData.push( row[yVariable] );
-		}
-		yData[yVariable] =  rawData;
-	}
-
-
+function processCustomData() {
         var graph;	
 	var title;
 	var xLabal;
 	var yLabal;
 
 
-	title = instrument[x_axis_values[0]].variable + " vs " + instrument[y_axis_values[0]].variable;
-	xLabel = instrument[x_axis_values[0]].variable + " [" + instrument[x_axis_values[0]].units + "]";
-	yLabel = instrument[y_axis_values[0]].variable + " [" + instrument[y_axis_values[0]].units + "]";
-        graph = new Graph(title, yLabel, xLabel);
-	for (index = 0; index < (x_axis_values.length / 2); index++) {
-		graph.pushXData(xData[x_axis_values[index]]);
-	}
-
-	// If Delta plot
-	if (document.getElementById('diff_id').checked) { 
-		array0 = yData[y_axis_values[0]];
-		array1 = yData[y_axis_values[1]];
-		var diff=[];
-		diff = array0.map(function (num, idx) {
-			return num - array1[idx]; 
-		});
-		graph.createNewTrace("Difference");
-		graph.pushTraceData(diff);
-		makePlotlyGraph(graph,custom_plot); 
-	} else {
-		if(isTimePlot){
-			for (index = 0; index < (x_axis_values.length / 2); index++) {
-				graph.createNewTrace(instrument[x_axis_values[index]].name);
-				graph.pushTraceData(yData[x_axis_values[index]]);
-			}
-			makePlotlyGraphTime(graph,custom_plot); 
-		} else {
-			for (index = 0; index < (y_axis_values.length / 2); index++) {
-				graph.createNewTrace(instrument[y_axis_values[index]].name);
-				graph.pushTraceData(yData[y_axis_values[index]]);
-			}
-			makePlotlyGraph(graph,custom_plot); 
-		}
-	}
-
-//        var overlayID = document.getElementById("overlay");
-//	document.getElementById("loader").style.display = "none";
-//	overlayID.style.display="none";
+        plot_num=0;
+        Object.keys(plot).forEach(key => {
+	    if(plot_num == 0){
+	        title = plot[key].x_instrument + " vs " + plot[key].y_instrument;
+                xLabel = plot[key].x_instrument;
+                yLabel = plot[key].y_instrument;
+                graph = new Graph(title, yLabel, xLabel);
+                graph.pushXData(plot[key].x_values);
+		plot_num++;
+	    }
+//            for(i=0; i<plot[key].x_values.length; i++) {
+//		    console.log(plot[key].x_values[i]);
+//	    }
+            graph.createNewTrace(plot[key].station);
+            graph.pushTraceData(plot[key].y_values);
+            makePlotlyGraph(graph,custom_plot); 
+	});
 }
 
 
