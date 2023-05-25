@@ -13,7 +13,10 @@ sub get_data($self, $cnv_fullpath_name, $instrument){
     my $column = $instrument->number;
     #open cnv file
     open (IN, $cnv_fullpath_name)  or die "ERROR: $cnv_fullpath_name not found";
-    print STDERR "DATAFILE: \$datadir/\$file_in= $cnv_fullpath_name\n" if ($Debug);
+    print STDERR "\nDATAFILE: \$datadir/\$file_in= $cnv_fullpath_name\n" if ($Debug);
+    print STDERR "COLUMN:" if ($Debug);
+    print STDERR $instrument->number if ($Debug);
+    print STDERR "\n" if ($Debug);
     while(<IN>){
         if(!/\*/ && !/\#/){
             my @line = split;

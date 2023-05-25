@@ -4,6 +4,7 @@
 use Mojolicious::Lite -signatures;
 use Class::Struct;
 use lib qw(lib);
+use Storable qw(dclone);
 use CtdPlot::Model::InstrListFromCNV;
 use CtdPlot::Model::CNV2CSV;
 use CtdPlot::Model::getDataFromCNV;
@@ -41,7 +42,8 @@ struct( Plot => {
 
 my @instruments;
 my $instruments = [];
-my @cnv_info;
+my @x_values;
+my @y_values;
 my @cnv_files_selected = ();
 my $x_axis;
 my $y_axis;
@@ -58,7 +60,7 @@ get '/' => sub ($c) {
       my $cnv_filename = $cnv_filenames[0];
       my $cnv_fullpath_name = "${datadir}${cnv_filename}";
       helper instr_list => sub { state $instr_list = CtdPlot::Model::InstrListFromCNV->new };
-      #returns array of structs
+      #returns array of structs of instruments
       @instruments = $c->instr_list->get($cnv_fullpath_name);
   }
 
@@ -100,7 +102,8 @@ get '/' => sub ($c) {
   foreach my $cnv_file (@cnv_files_selected) {
       my $cnv_fullpath_name = "${datadir}$cnv_file";
       $plots[$index] = Plot->new();
-      $plots[$index]->station($cnv_file);
+      (my $cnv_without_extension = $cnv_file) =~ s/\.[^.]+$//;
+      $plots[$index]->station($cnv_without_extension);
 
       #find x instrument associated with x-axis name given from user
       my $x_axis_instrument = [];
@@ -110,13 +113,19 @@ get '/' => sub ($c) {
               last;
           }
       }
-      print STDERR $x_axis_instrument->name;
+      #print STDERR $x_axis_instrument->name;
       $plots[$index]->x_instrument($x_axis_instrument);
       
       #get x data for instrument selected by user
       helper cnvdata => sub { state $cnvdata = CtdPlot::Model::getDataFromCNV->new };
-      @cnv_info = $c->cnvdata->get_data($cnv_fullpath_name,$x_axis_instrument);
-      $plots[$index]->x_values(\@cnv_info);
+      @x_values = $c->cnvdata->get_data($cnv_fullpath_name,$x_axis_instrument);
+      #$plots[$index]->x_values(dclone \@x_values);
+      foreach my $val (@x_values){
+	      push @{$plots[$index]->{x_values} }, $val;
+      }
+      foreach my $val (@{$plots[$index]->{x_values} }){
+             print "$val\n";
+      }
 
       
       #find y instrument associated with x-axis name given from user
@@ -127,13 +136,16 @@ get '/' => sub ($c) {
               last;
           }
       }
-      print STDERR $y_axis_instrument->name;
+      #print STDERR $y_axis_instrument->name;
       $plots[$index]->y_instrument($y_axis_instrument);
 
       #get y data for instrument selected by user
       helper cnvdata => sub { state $cnvdata = CtdPlot::Model::getDataFromCNV->new };
-      @cnv_info = $c->cnvdata->get_data($cnv_fullpath_name,$y_axis_instrument);
-      $plots[$index]->y_values(\@cnv_info);
+      @y_values = $c->cnvdata->get_data($cnv_fullpath_name,$y_axis_instrument);
+      #$plots[$index]->y_values(dclone \@y_values);
+      foreach my $val (@y_values){
+	      push @{$plots[$index]->{y_values} }, $val;
+      }
 
       $index++;
   }
@@ -142,22 +154,32 @@ get '/' => sub ($c) {
 	  print STDERR "Station: ";
 	  print STDERR $inst->station;
 	  print STDERR "\n";
-	  print STDERR "Inst: ";
+	  print STDERR "X Instr: ";
 	  print STDERR $inst->x_instrument->name;
 	  print STDERR "\n";
-	  print STDERR "Inst: ";
+	  print STDERR "Y Instr: ";
 	  print STDERR $inst->y_instrument->name;
 	  print STDERR "\n";
-          my $ary_ref = $inst->x_values;
+	  print STDERR "X Values: ";
+	  #my $ary_ref = $inst->x_values;
+	  #foreach (@$ary_ref){
+	  #foreach (@($inst->x_values)){
+	  #    print STDERR;
+	  #    print STDERR " ";
+	  #}
+	  #print STDERR "\nY Values: ";
+	  #$ary_ref = $inst->y_values;
+	  #foreach (@$ary_ref){
+	  #    print STDERR;
+	  #    print STDERR " ";
+	  #}
   }
 
   #Send data to client 
-  $c->stash(fileSelection	=> $cnv_filenames[0]);
-  $c->stash(stationslist	=> \@cnv_files_selected);
+  $c->stash(plots		=> \@plots);
   $c->stash(stafilelist		=> \@cnv_filenames);
   $c->stash(instrumentlist	=> \@instruments);
-  $c->stash(cnv_info		=> \@cnv_info);
-  $c->render( template		=> 'index');
+  $c->render(template		=> 'index');
 };
 
 app->log->debug('Starting application');

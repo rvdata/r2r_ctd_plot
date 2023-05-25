@@ -14,8 +14,21 @@ var Instrument = function() {
 	this.addUnits = function(units){ this.units = units; }
 	this.addVariable = function(variable){ this.variable = variable; }
 }
+var Plot = function() {
+	this.station;
+	this.x_instrument;
+	this.y_instrument;
+	this.x_values = [];
+	this.y_values = [];
+	this.addStation = function(station){ this.station = station; }
+	this.addXInstrument = function(x_instrument){ this.x_instrument = x_instrument; }
+	this.addYInstrument = function(y_instrument){ this.y_instrument = y_instrument; }
+	this.addXValue = function(x_value){ this.x_values.push(x_value); }
+	this.addYValue = function(y_value){ this.y_values.push(y_value); }
+}
 
 instrument = [];
+plot = [];
 stations_selected = [];
 
 function onLoadFunction() {
@@ -283,6 +296,16 @@ function displayMultiSelect() {
 		// placeholder of search input
 		search_placeholder: 'Search...'
 	}); 
+	Object.keys(plot).forEach(key => {
+		console.log(key, plot[key].station);
+		console.log(key, plot[key].x_instrument.name);
+		console.log(key, plot[key].y_instrument);
+		let i = 0;
+		while (i < plot[key].x_values.length) {
+			console.log(plot[key].x_values[i]);
+			i++;
+		}
+	});
 
 }; 
 

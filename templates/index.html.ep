@@ -20,7 +20,6 @@
                </fieldset>
                 <br>
            </form>
-</div>
 <div align="center">
 	<button type="button" id="cnvSubmit" class="bigbutton" onclick="submitAll()">Submit Stations</button>
 </div>
@@ -41,13 +40,11 @@ displayMultiFileSelect()
        	    instrument["<%= $instr->name %>"].addName("<%= $instr->name %>");
        	    instrument["<%= $instr->name %>"].addUnits("<%= $instr->units %>");
        	    instrument["<%= $instr->name %>"].addVariable("<%= $instr->quantity_measured %>");
-	    
        	% }
        	    instrument["time"] = new Instrument();
             instrument["time"].addName("time");
        	    instrument["time"].addUnits("Sample");
        	    instrument["time"].addVariable("Time");
-	    
 </script>
 <h1 style="text-align:center;">Select Variables to Plot</h1>
 <div class="parent grid-parent">
@@ -91,11 +88,28 @@ displayMultiFileSelect()
       <td><div id="custom_plot" style="height: 570px;"></div></td>
    </tr>
 </table>
+<div id=newcontent>
+<script type="text/javascript">
+% foreach my $pl (@$plots) {
+    console.log("<%= $pl->station %>");
+    plot["<%= $pl->station %>"] = new Plot();
+    plot["<%= $pl->station %>"].addStation("<%= $pl->station %>");
+    console.log("<%= $pl->x_instrument->name %>");
+    plot["<%= $pl->station %>"].addXInstrument("<%= $pl->x_instrument->name %>");
+    console.log("<%= $pl->y_instrument->name %>");
+    plot["<%= $pl->station %>"].addYInstrument("<%= $pl->y_instrument->name %>");
+    % foreach my $val (@{$pl->{x_values}}) {
+          plot["<%= $pl->station %>"].addXValue("<%= $val %>");
+    % }
+    % foreach my $val (@{$pl->{y_values}}) {
+          plot["<%= $pl->station %>"].addYValue("<%= $val %>");
+    % }
+% }
+</script>
+</div>
+</div>
 <script type="text/javascript">
 displayMultiSelect()
-% foreach my $station (@$stationslist) {
-stations_selected.push("<%= $station %>");
-% }
 function submitAll() {
     // Construct data string
     var dataString = $("#cnvselect, #xaxis, #yaxis").serialize();
@@ -105,13 +119,13 @@ function submitAll() {
 
         //url: 'ctdplot.pl',
     $.ajax( {
+	async: false,
         type: 'GET',
         data: dataString,
         success: function(data) {
             console.log(data);
-            $('#message').html(data);
+            $('#newcontent').html(data);
         }
     });
 }
 </script>
-
