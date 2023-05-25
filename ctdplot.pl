@@ -8,7 +8,6 @@ use Storable qw(dclone);
 use CtdPlot::Model::InstrListFromCNV;
 use CtdPlot::Model::CNV2CSV;
 use CtdPlot::Model::getDataFromCNV;
-#use CtdPlot::Model::CNV2CSVString;
 
 my $datadir = "/home/data/armstrong/ctd/";
 my $index=0;
@@ -68,32 +67,13 @@ get '/' => sub ($c) {
   for my $key (@{$c->req()->params()->names}) {
       print STDERR "$key:\n";
       my $param_refs = $c->req()->every_param($key);
-      #reset stations selected so it doesn't double count
       if($key =~ /file_selection_ID/){
-          foreach (@$param_refs){
-	          print STDERR "cnv file: " ;
-	          print STDERR ;
-	          print STDERR "\n" ;
-		  push(@cnv_files_selected,$_);
-	  }
+          foreach (@$param_refs){ push(@cnv_files_selected,$_); }
       }elsif($key =~ /x_axis/){
-          foreach (@$param_refs){
-	          print STDERR "x-axis: " ;
-	          print STDERR ;
-	          print STDERR "\n" ;
-		  $x_axis = $_;
-	  }
+          foreach (@$param_refs){ $x_axis = $_; }
       }elsif($key =~ /y_axis/){
-          foreach (@$param_refs){
-	          print STDERR "y-axis: " ;
-	          print STDERR ;
-	          print STDERR "\n" ;
-		  $y_axis = $_;
-	  }
-      }else{
-          print STDERR "ERROR" ;
-          print STDERR "\n" ;
-      }
+          foreach (@$param_refs){ $y_axis = $_; }
+      }else{ print STDERR "ERROR\n" ; }
 
   };
 
@@ -122,9 +102,6 @@ get '/' => sub ($c) {
       foreach my $val (@x_values){
 	      push @{$plots[$index]->{x_values} }, $val;
       }
-      #     foreach my $val (@{$plots[$index]->{x_values} }){
-      #       print "$val\n";
-      #}
 
       
       #find y instrument associated with x-axis name given from user
@@ -135,7 +112,6 @@ get '/' => sub ($c) {
               last;
           }
       }
-      #print STDERR $y_axis_instrument->name;
       $plots[$index]->y_instrument($y_axis_instrument);
 
       #get y data for instrument selected by user
@@ -147,31 +123,6 @@ get '/' => sub ($c) {
       }
 
       $index++;
-  }
-
-  foreach my $inst (@plots){
-	  print STDERR "Station: ";
-	  print STDERR $inst->station;
-	  print STDERR "\n";
-	  print STDERR "X Instr: ";
-	  print STDERR $inst->x_instrument->name;
-	  print STDERR "\n";
-	  print STDERR "Y Instr: ";
-	  print STDERR $inst->y_instrument->name;
-	  print STDERR "\n";
-	  print STDERR "X Values: ";
-	  #my $ary_ref = $inst->x_values;
-	  #foreach (@$ary_ref){
-	  #foreach (@($inst->x_values)){
-	  #    print STDERR;
-	  #    print STDERR " ";
-	  #}
-	  #print STDERR "\nY Values: ";
-	  #$ary_ref = $inst->y_values;
-	  #foreach (@$ary_ref){
-	  #    print STDERR;
-	  #    print STDERR " ";
-	  #}
   }
 
   #Send data to client 

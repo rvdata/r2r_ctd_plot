@@ -80,13 +80,19 @@ displayMultiFileSelect()
 </table>
 <script type="text/javascript">
 % foreach my $pl (@$plots) {
-    console.log("<%= $pl->station %>");
     plot["<%= $pl->station %>"] = new Plot();
     plot["<%= $pl->station %>"].addStation("<%= $pl->station %>");
-    console.log("<%= $pl->x_instrument->name %>");
     plot["<%= $pl->station %>"].addXInstrument("<%= $pl->x_instrument->name %>");
-    console.log("<%= $pl->y_instrument->name %>");
-    plot["<%= $pl->station %>"].addYInstrument("<%= $pl->y_instrument->name %>");
+    instrument["<%= $pl->x_instrument->name %>"] = new Instrument();
+    instrument["<%= $pl->x_instrument->name %>"].addName("<%= $pl->x_instrument->name %>");
+    instrument["<%= $pl->x_instrument->name %>"].addUnits("<%= $pl->x_instrument->units %>");
+    instrument["<%= $pl->x_instrument->name %>"].addVariable("<%= $pl->x_instrument->quantity_measured %>");
+    plot["<%= $pl->station %>"].addXInstrument(instrument["<%= $pl->x_instrument->name %>"]);
+    instrument["<%= $pl->y_instrument->name %>"] = new Instrument();
+    instrument["<%= $pl->y_instrument->name %>"].addName("<%= $pl->y_instrument->name %>");
+    instrument["<%= $pl->y_instrument->name %>"].addUnits("<%= $pl->y_instrument->units %>");
+    instrument["<%= $pl->y_instrument->name %>"].addVariable("<%= $pl->y_instrument->quantity_measured %>");
+    plot["<%= $pl->station %>"].addYInstrument(instrument["<%= $pl->y_instrument->name %>"]);
     % foreach my $val (@{$pl->{x_values}}) {
           plot["<%= $pl->station %>"].addXValue("<%= $val %>");
     % }

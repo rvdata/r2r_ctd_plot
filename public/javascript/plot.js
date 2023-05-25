@@ -256,50 +256,10 @@ function displayMultiFileSelect() {
 }; 
 
 function displayMultiSelect() {
-	//display multi select menu
-	var x_axis_values; //active instrument
-	var y_axis_values; //list of all instruments selected
-	$x_axis_values = [];
-	$y_axis_values = []; 
-
-	// multi-Selection form for instruments
-        $(document).ready(function(){
-		$('#x_axis_ID' ).multi();
-	});
-	// Selection form
-	$( '#x_axis_ID' ).multi({
-		non_selected_header: 'Variables',
-		selected_header: 'Selected Variable'
-	});
-	// Selection form
-	$( '#x_axis_ID' ).multi({
-		// enable search
-		enable_search: true,
-		// placeholder of search input
-		search_placeholder: 'Search...'
-	});
-
-
-        // multi-Selection form for instruments
-	$(document).ready(function(){
-		$('#y_axis_ID' ).multi();
-	});
-	// Selection form
-	$( '#y_axis_ID' ).multi({
-		non_selected_header: 'Variables',
-		selected_header: 'Selected Variables'
-	});
-	// Selection form
-	$( '#y_axis_ID' ).multi({
-		// enable search
-		enable_search: true,
-		// placeholder of search input
-		search_placeholder: 'Search...'
-	}); 
 	Object.keys(plot).forEach(key => {
 		console.log(key, plot[key].station);
-		console.log(key, plot[key].x_instrument);
-		console.log(key, plot[key].y_instrument);
+		console.log(key, plot[key].x_instrument.name);
+		console.log(key, plot[key].y_instrument.name);
 		//let i = 0;
 	//	while (i < plot[key].x_values.length) {
 	//		console.log(plot[key].x_values[i]);
@@ -823,16 +783,13 @@ function processCustomData() {
         plot_num=0;
         Object.keys(plot).forEach(key => {
 	    if(plot_num == 0){
-	        title = plot[key].x_instrument + " vs " + plot[key].y_instrument;
-                xLabel = plot[key].x_instrument;
-                yLabel = plot[key].y_instrument;
+	        title = plot[key].x_instrument.name + " vs " + plot[key].y_instrument.name;
+                xLabel = plot[key].x_instrument.name;
+                yLabel = plot[key].y_instrument.name;
                 graph = new Graph(title, yLabel, xLabel);
                 graph.pushXData(plot[key].x_values);
 		plot_num++;
 	    }
-//            for(i=0; i<plot[key].x_values.length; i++) {
-//		    console.log(plot[key].x_values[i]);
-//	    }
             graph.createNewTrace(plot[key].station);
             graph.pushTraceData(plot[key].y_values);
             makePlotlyGraph(graph,custom_plot); 
