@@ -102,6 +102,13 @@ displayMultiFileSelect()
 <script type="text/javascript">
 displayMultiSelect()
 function submitAll() {
+     //get list of stations from multi-selection drop-down list
+     cnv_values = $("#file_selection_ID").val();
+     if (cnv_values == "") {
+         alert("Station must be filled out");
+         return false;
+     }
+
     // Construct data string
     var dataString = $("#cnvselect, #xaxis, #yaxis").serialize();
 
