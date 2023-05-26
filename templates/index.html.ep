@@ -2,11 +2,7 @@
 % title 'CTD Stations';
 <div id=newcontent>
 <h1 style="text-align:center;">CTD Stations Available for Plotting</h1>
-<p>
-<input type="radio" name="timeSel" value="1" checked="checked" display="inline-block"onclick="makeplot();">Default Graphs</input><br>
-<input type="radio" id="time_radio_id" name="timeSel" value="0" display="inline-block"onclick="makeplot();">Time-based Graphs</input><br>
-<input type="radio" id="time_radio_id" name="timeSel" value="0" display="inline-block"onclick="makeplot();">Multi-Station Graphs</input>
-</p>
+<h1 style="text-align:center;">Select Stations to Plot</h1>
 <div id="file_select_form_id"  class="child"  align="center">
             <form class="form-card" id="cnvselect">
                 <fieldset class="form-fieldset">
@@ -44,32 +40,32 @@ displayMultiFileSelect()
        	    instrument["time"].addUnits("Sample");
        	    instrument["time"].addVariable("Time");
 </script>
-<h1 style="text-align:center;">Select Variables to Plot</h1>
-<div class="parent grid-parent">
-            <legend class="form-legend">X-Axis</legend>
-            <p style="font-size:20px;">
-            <label for="y_axis_ID">Select One or More Variables</label>
-            <select name="y_axis_ID" id="yaxis">
-
-		% foreach my $instr (@$instrumentlist) {
-       	    		<option value="<%= $instr->name %>"><%= $instr->name %></>
-		%}
-	                <option value="time">Time</>
-		<option selected="prDM">prDM</option>
-
-                <br></select>
-            </p>
-            <legend class="form-legend">Y-Axis</legend>
-            <p style="font-size:20px;">
-            <label for="x_axis_ID">Select One Variable (or more if x=Time)</label>
-            <select name="x_axis_ID" id="xaxis">
-		% foreach my $instr (@$instrumentlist) {
-       	    		<option value="<%= $instr->name %>"><%= $instr->name %></>
-		%}                
-		<option selected="t090C">t090C</option>
-              <br></select>
-            </p>
-</div>
+<h1 style="text-align:center;">Instruments to Plot</h1>
+<p style="font-size:20px;">
+    <label for="y_axis_ID">Select Instrument for X-Axis</label>
+        <select name="y_axis_ID" id="yaxis" style="font-size:20px">
+	    <optgroup>
+            % foreach my $instr (@$instrumentlist) {
+    	    <option value="<%= $instr->name %>"><%= $instr->name %></>
+            %}
+	    <option value="time">Time</>
+	    <option selected="prDM">prDM</option>
+	    </optgroup>
+            <br>
+	</select>
+</p>
+<p style="font-size:20px;">
+    <label for="x_axis_ID">Select Instrument for Y-Axis</label>
+        <select name="x_axis_ID" id="xaxis"  style="font-size:20px">
+	    <optgroup>
+            % foreach my $instr (@$instrumentlist) {
+            <option value="<%= $instr->name %>"><%= $instr->name %></>
+	    %}                
+	    <option selected="t090C">t090C</option>
+	    </optgroup>
+            <br>
+	</select>
+</p>
 <div align="center">
 	<button type="button" id="cnvSubmit" class="bigbutton" onclick="submitAll()">Display Plot</button>
 </div>

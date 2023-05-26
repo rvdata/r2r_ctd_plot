@@ -65,7 +65,6 @@ get '/' => sub ($c) {
   my $y_axis="";
   #get list of selected stations from browser multiselect form
   for my $key (@{$c->req()->params()->names}) {
-      print STDERR "$key:\n";
       my $param_refs = $c->req()->every_param($key);
       if($key =~ /file_selection_ID/){
           foreach (@$param_refs){ push(@cnv_files_selected,$_); }
@@ -92,19 +91,14 @@ get '/' => sub ($c) {
               last;
           }
       }
-      #print STDERR $x_axis_instrument->name;
       $plots[$index]->x_instrument($x_axis_instrument);
       
       #get x data for instrument selected by user
       helper cnvdata => sub { state $cnvdata = CtdPlot::Model::getDataFromCNV->new };
       @x_values = $c->cnvdata->get_data($cnv_fullpath_name,$x_axis_instrument);
-      #$plots[$index]->x_values(dclone \@x_values);
-      foreach my $val (@x_values){
-	      push @{$plots[$index]->{x_values} }, $val;
-      }
+      foreach my $val (@x_values){ push @{$plots[$index]->{x_values} }, $val; }
 
-      
-      #find y instrument associated with x-axis name given from user
+      #find y instrument associated with y-axis name given from user
       my $y_axis_instrument = [];
       foreach my $instrument (@instruments){
           if($y_axis eq $instrument->name){
@@ -117,10 +111,7 @@ get '/' => sub ($c) {
       #get y data for instrument selected by user
       helper cnvdata => sub { state $cnvdata = CtdPlot::Model::getDataFromCNV->new };
       @y_values = $c->cnvdata->get_data($cnv_fullpath_name,$y_axis_instrument);
-      #$plots[$index]->y_values(dclone \@y_values);
-      foreach my $val (@y_values){
-	      push @{$plots[$index]->{y_values} }, $val;
-      }
+      foreach my $val (@y_values){ push @{$plots[$index]->{y_values} }, $val; }
 
       $index++;
   }
@@ -132,5 +123,5 @@ get '/' => sub ($c) {
   $c->render(template		=> 'index');
 };
 
-app->log->debug('Starting application');
+#app->log->debug('Starting application');
 app->start;
