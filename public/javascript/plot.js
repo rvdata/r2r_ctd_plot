@@ -780,16 +780,16 @@ function processCustomData() {
 	    delete(graph);
 	});
 
-        plot_num=0;
+        first_plot=true;
         Object.keys(plot).forEach(key => {
-	    if(plot_num == 0){
+	    if(first_plot){
+		first_plot=false;
 	        title = plot[key].x_instrument.name + " vs " + plot[key].y_instrument.name;
                 xLabel = plot[key].x_instrument.name;
                 yLabel = plot[key].y_instrument.name;
                 graph = new Graph(title, yLabel, xLabel);
-                graph.pushXData(plot[key].x_values);
-		plot_num++;
 	    }
+            graph.pushXData(plot[key].x_values);
             graph.createNewTrace(plot[key].station);
             graph.pushTraceData(plot[key].y_values);
             makePlotlyGraph(graph,custom_plot); 
@@ -807,7 +807,7 @@ function makePlotlyGraph(graph,div_id){
 	for(index=0; index <  graph.numYDataSets; index++){
 		//create a Trace object for each y-data set. 
 		//NOTE X and Y VALUES ARE SWAPPPED HERE.
-		trace[index] = new Trace(graph.y[index], graph.x[0], index, graph.traceName[index]);
+		trace[index] = new Trace(graph.y[index], graph.x[index], index, graph.traceName[index]);
 	}
 
         var layout = new Layout(graph.title, graph.xLabel, graph.yLabel);
