@@ -112,14 +112,13 @@ get '/' => sub ($c) {
       #get x,y data for instrument selected by user
       helper cnvdata => sub { state $cnvdata = CtdPlot::Model::getDataFromCNV->new };
       ($x_values,$y_values) = $c->cnvdata->get_data($cnv_fullpath_name,$x_axis_instrument,$y_axis_instrument);
-      foreach my $val (@$x_values){ push @{$plots[$index]->{x_values} }, $val; }
-      foreach my $val (@$y_values){ push @{$plots[$index]->{y_values} }, $val; }
+      @{$plots[$index]->{x_values} } = @{ dclone($x_values) };
+      @{$plots[$index]->{y_values} } = @{ dclone($y_values) };
 
       $index++;
   }
   
   #my $plots_json = encode_json \@plots;
-  #print "Hello\n";
   #print "$plots_json\n";
 
   #Send data to client 
