@@ -260,10 +260,8 @@ function displayMultiSelect() {
 		console.log(key, plot[key].station);
 		console.log(key, plot[key].x_instrument.name);
 		console.log(key, plot[key].y_instrument.name);
-		//let i = 0;
-	//	while (i < plot[key].x_values.length) {
+	//	for(i=0; i <  plot[key].x_values.length; i++) {
 	//		console.log(plot[key].x_values[i]);
-	//		i++;
 	//	}
 	});
 	processCustomData();

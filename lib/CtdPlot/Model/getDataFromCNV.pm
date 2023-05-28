@@ -6,20 +6,26 @@ use experimental qw(signatures);
 
 sub new { bless {}, shift }
 
-sub get_data($self, $cnv_fullpath_name, $instrument){
-    my @instr_data = ();
+sub get_data($self, $cnv_fullpath_name, $x_instrument, $y_instrument){
+    my @x_instr_data = ();
+    my @y_instr_data = ();
     #open cnv file
     open (IN, $cnv_fullpath_name)  or die "ERROR: $cnv_fullpath_name not found";
     while(<IN>){
         if(!/\*/ && !/\#/){
             my @line = split;
-	    my $val = $line[$instrument->number];
+	    my $xval = $line[$x_instrument->number];
+	    my $yval = $line[$y_instrument->number];
+
 	    #prDM must be negated
-	    $val = ($instrument->name eq "prDM") ?  -$val : $val;
-	    push(@instr_data,$val);
+	    $xval = ($x_instrument->name eq "prDM") ?  -$xval : $xval;
+	    $yval = ($y_instrument->name eq "prDM") ?  -$yval : $yval;
+
+	    push(@x_instr_data,$xval);
+	    push(@y_instr_data,$yval);
         }
     }
     close (IN);
-return @instr_data;
+return (\@x_instr_data,\@y_instr_data);
 }
 1;

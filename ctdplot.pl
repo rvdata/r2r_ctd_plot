@@ -5,6 +5,8 @@ use Mojolicious::Lite -signatures;
 use Class::Struct;
 use lib qw(lib);
 use Storable qw(dclone);
+#use Mojo::JSON qw(decode_json encode_json);
+#use JSON;
 use CtdPlot::Model::InstrListFromCNV;
 use CtdPlot::Model::CNV2CSV;
 use CtdPlot::Model::getDataFromCNV;
@@ -59,8 +61,6 @@ get '/' => sub ($c) {
 
   my @cnv_files_selected=();
   my @plots=();
-  my @x_values=();
-  my @y_values=();
   my $x_axis="";
   my $y_axis="";
   #get list of selected stations from browser multiselect form
@@ -77,13 +77,18 @@ get '/' => sub ($c) {
   };
 
   my $index=0;
+  #get selected data set from each cnv file
   foreach my $cnv_file (@cnv_files_selected) {
+      my $x_values;
+      my $y_values;
       my $cnv_fullpath_name = "${datadir}$cnv_file";
       $plots[$index] = Plot->new();
+      #remove .cnv extension just to shorten name for plotly label
       (my $cnv_without_extension = $cnv_file) =~ s/\.[^.]+$//;
+      #create a plot object for each station
       $plots[$index]->station($cnv_without_extension);
 
-      #find x instrument associated with x-axis name given from user
+      #search instrument list for instrument selected by user, used for plotting x-axis
       my $x_axis_instrument = [];
       foreach my $instrument (@instruments){
           if($x_axis eq $instrument->name){
@@ -93,10 +98,6 @@ get '/' => sub ($c) {
       }
       $plots[$index]->x_instrument($x_axis_instrument);
       
-      #get x data for instrument selected by user
-      helper cnvdata => sub { state $cnvdata = CtdPlot::Model::getDataFromCNV->new };
-      @x_values = $c->cnvdata->get_data($cnv_fullpath_name,$x_axis_instrument);
-      foreach my $val (@x_values){ push @{$plots[$index]->{x_values} }, $val; }
 
       #find y instrument associated with y-axis name given from user
       my $y_axis_instrument = [];
@@ -108,13 +109,18 @@ get '/' => sub ($c) {
       }
       $plots[$index]->y_instrument($y_axis_instrument);
 
-      #get y data for instrument selected by user
+      #get x,y data for instrument selected by user
       helper cnvdata => sub { state $cnvdata = CtdPlot::Model::getDataFromCNV->new };
-      @y_values = $c->cnvdata->get_data($cnv_fullpath_name,$y_axis_instrument);
-      foreach my $val (@y_values){ push @{$plots[$index]->{y_values} }, $val; }
+      ($x_values,$y_values) = $c->cnvdata->get_data($cnv_fullpath_name,$x_axis_instrument,$y_axis_instrument);
+      foreach my $val (@$x_values){ push @{$plots[$index]->{x_values} }, $val; }
+      foreach my $val (@$y_values){ push @{$plots[$index]->{y_values} }, $val; }
 
       $index++;
   }
+  
+  #my $plots_json = encode_json \@plots;
+  #print "Hello\n";
+  #print "$plots_json\n";
 
   #Send data to client 
   $c->stash(plots		=> \@plots);
