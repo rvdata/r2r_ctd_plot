@@ -1,11 +1,3 @@
-//20200629 sharding colors to match gnuplot
-//20200701 sharding carved out graph parameters as objects
-//20200702 sharding added plot4 salinity vs temp
-//20200702 sharding added time plots
-//20200720 sharding replaced all "Class" definitions with function calls for Safari
-//20200720 sharding rewrote Math.max() function call to please Safari
-//20200722 sharding hard-coded all default plots
-
 var Instrument = function() {
 	this.name;
 	this.units;
@@ -258,12 +250,12 @@ function displayMultiSelect() {
                 $('#y_axis_ID' ).multi();
         });
         // Selection form
-        $( '#y_axis_ID' ).multi({
+        $( '#x_axis_ID' ).multi({
                 non_selected_header: 'Variables',
                 selected_header: 'Selected Variable'
         });
         // Selection form
-        $( '#y_axis_ID' ).multi({
+        $( '#x_axis_ID' ).multi({
                 // enable search
                 enable_search: true,
                 // placeholder of search input
@@ -786,25 +778,37 @@ function processCustomData() {
 	var title;
 	var xLabal;
 	var yLabal;
+	var isTimePlot = false;
         
         Object.keys(plot).forEach(key => {
 	    delete(graph);
 	});
 
-        first_plot=true;
-        Object.keys(plot).forEach(key => {
-	    if(first_plot){
-		first_plot=false;
-	        title = plot[key].x_instrument.name + " vs " + plot[key].y_instrument.name;
-                xLabel = plot[key].x_instrument.name;
-                yLabel = plot[key].y_instrument.name;
-                graph = new Graph(title, yLabel, xLabel);
-	    }
-            graph.pushXData(plot[key].x_values);
-            graph.createNewTrace(plot[key].station);
-            graph.pushTraceData(plot[key].y_values);
-            makePlotlyGraph(graph,custom_plot); 
-	});
+	//populate title and X-Axis
+	first_plot=true;
+	Object.keys(plot).forEach(key => {
+		if(first_plot){
+			first_plot=false;
+			title = plot[key].x_instrument.name + " vs " + plot[key].y_instrument.name;
+			yLabel = plot[key].x_instrument.name;
+			xLabel = plot[key].y_instrument.name;
+			graph = new Graph(title, yLabel, xLabel);
+		}
+	}); 
+	if(isTimePlot){
+		Object.keys(plot).forEach(key => {
+			graph.createNewTrace(plot[key].station);
+			graph.pushTraceData(plot[key].x_values);
+		});
+		makePlotlyGraphTime(graph,custom_plot);
+	} else {
+		Object.keys(plot).forEach(key => {
+			graph.pushXData(plot[key].y_values);
+			graph.createNewTrace(plot[key].station);
+			graph.pushTraceData(plot[key].x_values);
+		});
+		makePlotlyGraph(graph,custom_plot);
+	}
 }
 
 

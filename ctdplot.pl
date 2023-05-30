@@ -10,6 +10,7 @@ use Storable qw(dclone);
 use CtdPlot::Model::InstrListFromCNV;
 use CtdPlot::Model::CNV2CSV;
 use CtdPlot::Model::getDataFromCNV;
+use CtdPlot::Model::getDeltaDataFromCNV;
 
 my $datadir = "/home/data/armstrong/ctd/";
 my $index=0;
@@ -60,6 +61,7 @@ get '/' => sub ($c) {
   }
 
   my @cnv_files_selected=();
+  my @x_axes_selected=(); #can be 2 if diff selected
   my @plots=();
   my $x_axis="";
   my $y_axis="";
@@ -69,7 +71,10 @@ get '/' => sub ($c) {
       if($key =~ /file_selection_ID/){
           foreach (@$param_refs){ push(@cnv_files_selected,$_); }
       }elsif($key =~ /x_axis/){
-          foreach (@$param_refs){ $x_axis = $_; }
+          foreach (@$param_refs){ 
+	          print STDERR "adding $_\n";
+		  push(@x_axes_selected,$_); 
+	  }
       }elsif($key =~ /y_axis/){
           foreach (@$param_refs){ $y_axis = $_; }
       }else{ print STDERR "ERROR\n" ; }
@@ -91,12 +96,31 @@ get '/' => sub ($c) {
       #search instrument list for instrument selected by user, used for plotting x-axis
       my $x_axis_instrument = [];
       foreach my $instrument (@instruments){
-          if($x_axis eq $instrument->name){
-              $x_axis_instrument = $instrument;
-              last;
-          }
+	      if($x_axes_selected[0] eq $instrument->name){
+		      $x_axis_instrument = $instrument;
+		      last;
+	      }
       }
       $plots[$index]->x_instrument($x_axis_instrument);
+
+      #if there's more than one selected, must be diff. Create new Instrument
+      my $x_axis2_instrument = [];
+      if(@x_axes_selected > 1){
+	      foreach my $instrument (@instruments){
+		      if($x_axes_selected[1] eq $instrument->name){
+			      $x_axis2_instrument = $instrument;
+			      last;
+		      }
+	      }
+	      my $diff_instr = Instrument->new();
+	      my $instrument_name = "$x_axes_selected[0] - $x_axes_selected[1]";
+              $diff_instr->name($instrument_name);
+	      $diff_instr->units($x_axis_instrument->units);
+	      $diff_instr->quantity_measured($x_axis_instrument->quantity_measured);
+	      push(@instruments,$diff_instr);
+	      $plots[$index]->x_instrument($diff_instr);
+      }
+
       
 
       #find y instrument associated with y-axis name given from user
@@ -109,9 +133,15 @@ get '/' => sub ($c) {
       }
       $plots[$index]->y_instrument($y_axis_instrument);
 
-      #get x,y data for instrument selected by user
       helper cnvdata => sub { state $cnvdata = CtdPlot::Model::getDataFromCNV->new };
-      ($x_values,$y_values) = $c->cnvdata->get_data($cnv_fullpath_name,$x_axis_instrument,$y_axis_instrument);
+      helper cnvdeltadata => sub { state $cnvdata = CtdPlot::Model::getDeltaDataFromCNV->new };
+      #get x,y data for instrument selected by user
+      if(@x_axes_selected > 1){
+	      ($x_values,$y_values) = $c->cnvdeltadata->get_delta_data($cnv_fullpath_name,$x_axis_instrument,$x_axis2_instrument,$y_axis_instrument);
+      } else {
+	      ($x_values,$y_values) = $c->cnvdata->get_data($cnv_fullpath_name,$x_axis_instrument,$y_axis_instrument);
+      }
+
       @{$plots[$index]->{x_values} } = @{ dclone($x_values) };
       @{$plots[$index]->{y_values} } = @{ dclone($y_values) };
 

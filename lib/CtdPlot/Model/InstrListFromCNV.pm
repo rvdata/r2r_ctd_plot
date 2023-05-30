@@ -7,7 +7,7 @@ use experimental qw(signatures);
 sub new { bless {}, shift }
 
 sub get ( $self, $file_in) {
-        my @insts;
+        my @instruments = ();
         my $numb;
         my $extra_info;
         my $units;
@@ -38,15 +38,16 @@ sub get ( $self, $file_in) {
                         print STDERR "EXTRA INFO: $extra_info\n" if ($Debug);
                         print STDERR "UNITS: $units \n" if ($Debug);
                         @extra_fields = split(',',$extra_info);
-                        $insts[$numb] = Instrument->new();
-                        $insts[$numb]->name($instrument_name);
-                        $insts[$numb]->number($numb);
-                        $insts[$numb]->units($units);
-                        $insts[$numb]->quantity_measured($extra_info);
+                        my $instrument = Instrument->new();
+                        $instrument->name($instrument_name);
+                        $instrument->number($numb);
+                        $instrument->units($units);
+                        $instrument->quantity_measured($extra_info);
+			push(@instruments,$instrument);
                 }
         }
         close (IN);
-        return @insts;
+        return @instruments;
 }
 
 1;
