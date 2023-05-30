@@ -72,7 +72,6 @@ get '/' => sub ($c) {
           foreach (@$param_refs){ push(@cnv_files_selected,$_); }
       }elsif($key =~ /x_axis/){
           foreach (@$param_refs){ 
-	          print STDERR "adding $_\n";
 		  push(@x_axes_selected,$_); 
 	  }
       }elsif($key =~ /y_axis/){
@@ -148,8 +147,6 @@ get '/' => sub ($c) {
       $index++;
   }
   
-  #my $plots_json = encode_json \@plots;
-  #print "$plots_json\n";
 
   #Send data to client 
   $c->stash(plots		=> \@plots);

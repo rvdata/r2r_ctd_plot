@@ -19,6 +19,10 @@
            </form>
 </div>
 <h1 style="text-align:center;">Instruments to Plot</h1>
+	
+<div style="display:none;" id="myDiv" class="animate-bottom"></div>
+<div id="loader"></div>
+<div style="display:none;" id="overlay" class="animationOverlay"></div>
 
 <div class="parent grid-parent">
     <div id="x_instr_fomr_id"  class="child"  align="center">
@@ -64,7 +68,12 @@
    </tr>
 </table>
 </div>
+<div align="center">
+<h1 style="text-align:center;">PNG for Printing</h1>
+<img id="jpg-export"></img>
+</div>
 <script type="text/javascript">
+onLoadFunction();
 displayMultiSelect();
 % foreach my $instr (@$instrumentlist) {
     instrument["<%= $instr->name %>"] = new Instrument();

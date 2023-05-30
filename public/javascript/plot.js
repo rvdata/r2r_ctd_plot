@@ -25,8 +25,8 @@ stations_selected = [];
 
 function onLoadFunction() {
 	//turn off loader
-//	document.getElementById("loader").style.display = "none";
- //       document.getElementById("myDiv").style.display = "block";
+	document.getElementById("loader").style.display = "none";
+        document.getElementById("myDiv").style.display = "block";
 }
 
 function Line(color) {
@@ -223,6 +223,8 @@ var LayoutTime = function(title, xLabel, yLabel, deltaT) {
 };
 
 function displayMultiSelect() {
+	document.getElementById("loader").style.display = "none";
+        document.getElementById("myDiv").style.display = "block";
 	//display multi-file select menu
 	var x_axis_values; //active station
 	var y_axis_values; //list of all stations selected
@@ -267,7 +269,7 @@ function displayMultiSelect() {
 function makeplot() {
 	//grap csv data and hand off to plotly.js
 	/* turn loader on */
-        //document.getElementById("loader").style.display = "";
+        document.getElementById("loader").style.display = "";
         document.getElementById("myDiv").style.display = "";
 
 	Plotly.d3.csv("ctd.dat", function(data){
@@ -744,16 +746,16 @@ function processDefaultData(allRows) {
 	}
 
 
- //       var overlayID = document.getElementById("overlay");
-//	document.getElementById("loader").style.display = "none";
-//	overlayID.style.display="none";
+        var overlayID = document.getElementById("overlay");
+	document.getElementById("loader").style.display = "none";
+	overlayID.style.display="none";
 }
 
 
 function makeCustomPlot(stations_selected) {
 	/* turn loader on */
-        //document.getElementById("loader").style.display = "";
-        //document.getElementById("myDiv").style.display = "";
+        document.getElementById("loader").style.display = "";
+        document.getElementById("myDiv").style.display = "";
 	for(i=0; i<stations_selected.length; i++){
 		console.log(stations_selected[i]);
 	}
@@ -765,14 +767,17 @@ function makeCustomPlot(stations_selected) {
 }; 
 
 function processCustomData() {
-	Object.keys(plot).forEach(key => {
-		console.log(key, plot[key].station);
-		console.log(key, plot[key].x_instrument.name);
-		console.log(key, plot[key].y_instrument.name);
+	/* turn loader on */
+        document.getElementById("loader").style.display = "";
+        document.getElementById("myDiv").style.display = "";
+	//Object.keys(plot).forEach(key => {
+	//	console.log(key, plot[key].station);
+	//	console.log(key, plot[key].x_instrument.name);
+	//	console.log(key, plot[key].y_instrument.name);
 	//	for(i=0; i <  plot[key].x_values.length; i++) {
 	//		console.log(plot[key].x_values[i]);
 	//	}
-	});
+	//});
 
         var graph;	
 	var title;
@@ -818,6 +823,9 @@ function makePlotlyGraph(graph,div_id){
 	//x and y data because depth is plotted along y-axis even though
 	//it's actually the independent variable.
 
+	var img_jpg= Plotly.d3.select('#jpg-export');
+
+
 	var trace=[];
 	for(index=0; index <  graph.numYDataSets; index++){
 		//create a Trace object for each y-data set. 
@@ -831,11 +839,32 @@ function makePlotlyGraph(graph,div_id){
 	for(index=0; index < trace.length ; index++){
 		data.push(trace[index]);
 	}
-	Plotly.newPlot(div_id, data, layout);
-        //var overlayID = document.getElementById("overlay");
-	//document.getElementById("loader").style.display = "none";
-	//overlayID.style.display="none";
+	Plotly.newPlot(div_id, data, layout)
+	
+	// static image in jpg format
+
+        .then(
+		function(gd)
+		{
+			Plotly.toImage(gd,{height:600,width:600})
+				.then(
+					function(url)
+					{
+						img_jpg.attr("src", url, {setBackground: setBackground});
+					}
+				)
+		});
+
+	//stop loader
+        var overlayID = document.getElementById("overlay");
+	document.getElementById("loader").style.display = "none";
+	overlayID.style.display="none";
 };
+
+function setBackground(gd) {
+  gd._fullLayout.paper_bgcolor = 'rgba(34,0,100,50)'
+  gd._fullLayout.plot_bgcolor = 'rgba(90,0,0,0)'
+}
 
 function makePlotlyGraphTime(graph,div_id){
 	//for time-based graphs, this function calls 
@@ -861,9 +890,9 @@ function makePlotlyGraphTime(graph,div_id){
 		data.push(trace[index]);
 	}
 	Plotly.newPlot(div_id, data, layout);
-//        var overlayID = document.getElementById("overlay");
-//	document.getElementById("loader").style.display = "none";
-//	overlayID.style.display="none";
+        var overlayID = document.getElementById("overlay");
+	document.getElementById("loader").style.display = "none";
+	overlayID.style.display="none";
 };
 function submitAll() {
      //get list of stations from multi-selection drop-down list
@@ -877,7 +906,7 @@ function submitAll() {
     var dataString = $("#cnvselect, #x_axis_ID, #y_axis_ID").serialize();
 
     // Log in console so you can see the final serialized data sent to AJAX
-    console.log(dataString);
+    //console.log(dataString);
 
         //url: 'ctdplot.pl',
     $.ajax( {
@@ -885,7 +914,7 @@ function submitAll() {
         type: 'GET',
         data: dataString,
         success: function(data) {
-            console.log(data);
+           // console.log(data);
             $('#newcontent').html(data);
         }
     });
