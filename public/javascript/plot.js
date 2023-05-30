@@ -255,18 +255,6 @@ function displayMultiFileSelect() {
 	});
 }; 
 
-function displayMultiSelect() {
-	Object.keys(plot).forEach(key => {
-		console.log(key, plot[key].station);
-		console.log(key, plot[key].x_instrument.name);
-		console.log(key, plot[key].y_instrument.name);
-	//	for(i=0; i <  plot[key].x_values.length; i++) {
-	//		console.log(plot[key].x_values[i]);
-	//	}
-	});
-	processCustomData();
-
-}; 
 
 function makeplot() {
 	//grap csv data and hand off to plotly.js
@@ -309,8 +297,8 @@ function processDefaultData(allRows) {
 
 	/*----------------------Depth vs Temperature-----------------------*/
 	xVariables = [ 't090C', 't190C' ];
-	console.log("xvars=" + xVariables);
-	console.log("plot=" + plot);
+	//console.log("xvars=" + xVariables);
+	//console.log("plot=" + plot);
 	xVariables.forEach(populateData); 
 	function populateData(xVariable, index, array) {
 		if( instrument[xVariable] ){ 
@@ -385,8 +373,8 @@ function processDefaultData(allRows) {
 
 	/*----------------------Depth vs Salinity-----------------------*/
 	xVariables = [ 'sal00', 'sal11' ];
-	console.log("xvars=" + xVariables);
-	console.log("plot=" + plot);
+	//console.log("xvars=" + xVariables);
+	//console.log("plot=" + plot);
 	xVariables.forEach(populateData); 
 	function populateData(xVariable, index, array) {
 		if( instrument[xVariable] ){ 
@@ -440,8 +428,8 @@ function processDefaultData(allRows) {
 
 	/*----------------------Depth vs Oxygen-----------------------*/
 	xVariables = [ 'sbeox0ML_L' ];
-	console.log("xvars=" + xVariables);
-	console.log("plot=" + plot);
+	//console.log("xvars=" + xVariables);
+	//console.log("plot=" + plot);
 	xVariables.forEach(populateData); 
 	function populateData(xVariable, index, array) {
 		if( instrument[xVariable] ){ 
@@ -492,8 +480,8 @@ function processDefaultData(allRows) {
 
 	xVariables = [];
 	xVariables = [ 'sal00' ];
-	console.log("xvars=" + xVariables);
-	console.log("plot=" + plot);
+	//console.log("xvars=" + xVariables);
+	//console.log("plot=" + plot);
 	xVariables.forEach(populateData); 
 	function populateData(xVariable, index, array) {
 		if( instrument[xVariable] ){ 
@@ -531,8 +519,8 @@ function processDefaultData(allRows) {
 	yData[yVariable] =  rawData;
 	/*----------------------Temperature Diff-------------------*/
 	xVariables = [ 't090C', 't190C' ];
-	console.log("xvars=" + xVariables);
-	console.log("plot=" + plot);
+	//console.log("xvars=" + xVariables);
+	//console.log("plot=" + plot);
 	xVariables.forEach(populateData); 
 	function populateData(xVariable, index, array) {
 		if( instrument[xVariable] ){ 
@@ -575,8 +563,8 @@ function processDefaultData(allRows) {
 
 	/*----------------------Conductivity Diff-------------------*/
 	xVariables = [ 'c0S_m', 'c1S_m' ];
-	console.log("xvars=" + xVariables);
-	console.log("plot=" + plot);
+	//console.log("xvars=" + xVariables);
+	//console.log("plot=" + plot);
 	xVariables.forEach(populateData); 
 	function populateData(xVariable, index, array) {
 		if( instrument[xVariable] ){ 
@@ -615,8 +603,8 @@ function processDefaultData(allRows) {
 
 	/*----------------------Transmissometer-----------------------*/
 	xVariables = [ 'CStarTr0' ];
-	console.log("xvars=" + xVariables);
-	console.log("plot=" + plot);
+	//console.log("xvars=" + xVariables);
+	//console.log("plot=" + plot);
 	xVariables.forEach(populateData); 
 	function populateData(xVariable, index, array) {
 		if( instrument[xVariable] ){ 
@@ -669,8 +657,8 @@ function processDefaultData(allRows) {
 
 	/*----------------------Environmental-----------------------*/
 	xVariables = [ 'flECO_AFL', 'turbWETntu0', 'wetCDOM' ];
-	console.log("xvars=" + xVariables);
-	console.log("plot=" + plot);
+	//console.log("xvars=" + xVariables);
+	//console.log("plot=" + plot);
 	xVariables.forEach(populateData); 
 	function populateData(xVariable, index, array) {
 		if( instrument[xVariable] ){ 
@@ -769,6 +757,15 @@ function makeCustomPlot(stations_selected) {
 }; 
 
 function processCustomData() {
+	Object.keys(plot).forEach(key => {
+		console.log(key, plot[key].station);
+		console.log(key, plot[key].x_instrument.name);
+		console.log(key, plot[key].y_instrument.name);
+	//	for(i=0; i <  plot[key].x_values.length; i++) {
+	//		console.log(plot[key].x_values[i]);
+	//	}
+	});
+
         var graph;	
 	var title;
 	var xLabal;
@@ -848,3 +845,29 @@ function makePlotlyGraphTime(graph,div_id){
 //	document.getElementById("loader").style.display = "none";
 //	overlayID.style.display="none";
 };
+function submitAll() {
+     //get list of stations from multi-selection drop-down list
+     cnv_values = $("#file_selection_ID").val();
+     if (cnv_values == "") {
+         alert("Station must be filled out");
+         return false;
+     }
+
+    // Construct data string
+    var dataString = $("#cnvselect, #xaxis, #yaxis").serialize();
+
+    // Log in console so you can see the final serialized data sent to AJAX
+    console.log(dataString);
+
+        //url: 'ctdplot.pl',
+    $.ajax( {
+        async: false,
+        type: 'GET',
+        data: dataString,
+        success: function(data) {
+            console.log(data);
+            $('#newcontent').html(data);
+        }
+    });
+    processCustomData();
+}

@@ -17,29 +17,7 @@
                </fieldset>
                 <br>
            </form>
-<script type="text/javascript">
-displayMultiFileSelect()
-</script>
 
-<h4 style="text-align:center;"> 
-	<p></p>
-
-	% 
-	%
-
-</h4>
-<script type="text/javascript">
-	% foreach my $instr (@$instrumentlist) {
-       	    instrument["<%= $instr->name %>"] = new Instrument();
-       	    instrument["<%= $instr->name %>"].addName("<%= $instr->name %>");
-       	    instrument["<%= $instr->name %>"].addUnits("<%= $instr->units %>");
-       	    instrument["<%= $instr->name %>"].addVariable("<%= $instr->quantity_measured %>");
-       	% }
-       	    instrument["time"] = new Instrument();
-            instrument["time"].addName("time");
-       	    instrument["time"].addUnits("Sample");
-       	    instrument["time"].addVariable("Time");
-</script>
 <h1 style="text-align:center;">Instruments to Plot</h1>
 <p style="font-size:20px;">
     <label for="y_axis_ID">Select Instrument for X-Axis</label>
@@ -74,56 +52,30 @@ displayMultiFileSelect()
       <td><div id="custom_plot" style="height: 570px;"></div></td>
    </tr>
 </table>
+</div>
+</div>
 <script type="text/javascript">
+displayMultiFileSelect();
+% foreach my $instr (@$instrumentlist) {
+    instrument["<%= $instr->name %>"] = new Instrument();
+    instrument["<%= $instr->name %>"].addName("<%= $instr->name %>");
+    instrument["<%= $instr->name %>"].addUnits("<%= $instr->units %>");
+    instrument["<%= $instr->name %>"].addVariable("<%= $instr->quantity_measured %>");
+% }
+    instrument["time"] = new Instrument();
+    instrument["time"].addName("time");
+    instrument["time"].addUnits("Sample");
+    instrument["time"].addVariable("Time");
 % foreach my $pl (@$plots) {
     plot["<%= $pl->station %>"] = new Plot();
     plot["<%= $pl->station %>"].addStation("<%= $pl->station %>");
-    plot["<%= $pl->station %>"].addXInstrument("<%= $pl->x_instrument->name %>");
-    instrument["<%= $pl->x_instrument->name %>"] = new Instrument();
-    instrument["<%= $pl->x_instrument->name %>"].addName("<%= $pl->x_instrument->name %>");
-    instrument["<%= $pl->x_instrument->name %>"].addUnits("<%= $pl->x_instrument->units %>");
-    instrument["<%= $pl->x_instrument->name %>"].addVariable("<%= $pl->x_instrument->quantity_measured %>");
     plot["<%= $pl->station %>"].addXInstrument(instrument["<%= $pl->x_instrument->name %>"]);
-    instrument["<%= $pl->y_instrument->name %>"] = new Instrument();
-    instrument["<%= $pl->y_instrument->name %>"].addName("<%= $pl->y_instrument->name %>");
-    instrument["<%= $pl->y_instrument->name %>"].addUnits("<%= $pl->y_instrument->units %>");
-    instrument["<%= $pl->y_instrument->name %>"].addVariable("<%= $pl->y_instrument->quantity_measured %>");
     plot["<%= $pl->station %>"].addYInstrument(instrument["<%= $pl->y_instrument->name %>"]);
     % foreach my $val (@{$pl->{x_values}}) {
-          plot["<%= $pl->station %>"].addXValue("<%= $val %>");
+    plot["<%= $pl->station %>"].addXValue("<%= $val %>");
     % }
     % foreach my $val (@{$pl->{y_values}}) {
-          plot["<%= $pl->station %>"].addYValue("<%= $val %>");
+    plot["<%= $pl->station %>"].addYValue("<%= $val %>");
     % }
 % }
-</script>
-</div>
-</div>
-<script type="text/javascript">
-displayMultiSelect()
-function submitAll() {
-     //get list of stations from multi-selection drop-down list
-     cnv_values = $("#file_selection_ID").val();
-     if (cnv_values == "") {
-         alert("Station must be filled out");
-         return false;
-     }
-
-    // Construct data string
-    var dataString = $("#cnvselect, #xaxis, #yaxis").serialize();
-
-    // Log in console so you can see the final serialized data sent to AJAX
-    console.log(dataString);
-
-        //url: 'ctdplot.pl',
-    $.ajax( {
-	async: false,
-        type: 'GET',
-        data: dataString,
-        success: function(data) {
-//            console.log(data);
-            $('#newcontent').html(data);
-        }
-    });
-}
 </script>
