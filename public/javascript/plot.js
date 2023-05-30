@@ -230,7 +230,7 @@ var LayoutTime = function(title, xLabel, yLabel, deltaT) {
 	};
 };
 
-function displayMultiFileSelect() {
+function displayMultiSelect() {
 	//display multi-file select menu
 	var x_axis_values; //active station
 	var y_axis_values; //list of all stations selected
@@ -253,6 +253,22 @@ function displayMultiFileSelect() {
 		// placeholder of search input
 		search_placeholder: 'Search...'
 	});
+	 // multi-Selection form for instruments
+        $(document).ready(function(){
+                $('#y_axis_ID' ).multi();
+        });
+        // Selection form
+        $( '#y_axis_ID' ).multi({
+                non_selected_header: 'Variables',
+                selected_header: 'Selected Variable'
+        });
+        // Selection form
+        $( '#y_axis_ID' ).multi({
+                // enable search
+                enable_search: true,
+                // placeholder of search input
+                search_placeholder: 'Search...'
+        });
 }; 
 
 
@@ -854,7 +870,7 @@ function submitAll() {
      }
 
     // Construct data string
-    var dataString = $("#cnvselect, #xaxis, #yaxis").serialize();
+    var dataString = $("#cnvselect, #x_axis_ID, #y_axis_ID").serialize();
 
     // Log in console so you can see the final serialized data sent to AJAX
     console.log(dataString);

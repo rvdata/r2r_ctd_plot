@@ -17,24 +17,36 @@
                </fieldset>
                 <br>
            </form>
-
 <h1 style="text-align:center;">Instruments to Plot</h1>
-<p style="font-size:20px;">
-    <label for="y_axis_ID">Select Instrument for X-Axis</label>
-        <select name="y_axis_ID" id="yaxis" style="font-size:20px">
-	    <optgroup>
-            % foreach my $instr (@$instrumentlist) {
-    	    <option value="<%= $instr->name %>"><%= $instr->name %></>
-            %}
-	    <option value="time">Time</>
-	    <option selected="prDM">prDM</option>
-	    </optgroup>
-            <br>
-	</select>
-</p>
+
+<div class="parent grid-parent">
+    <div id="x_instr_fomr_id"  class="child"  align="center">
+    <form class="form-card">
+        <fieldset class="form-fieldset">
+            <p style="font-size:20px;">
+            <label for="y_axis_ID">Select One or Two(for diff) X-Axis Intruments</label>
+            <select multiple="multiple" name="y_axis_ID" id="y_axis_ID">
+
+                % foreach my $instr (@$instrumentlist) {
+                        <option value="<%= $instr->name %>"><%= $instr->name %></>
+                %}
+                        <option value="time">Time</>
+
+                <br></select>
+            </p>
+                   <p>
+               <input type="radio" name="diffS" value="1" checked="checked">Overlay Variables on One Graph</input><br>
+               <input type="radio" id="diff_id" name="diffS" value="0">Plot the Delta between Two Variables</input>
+            </p>
+        </fieldset>
+    </form>
+    </div>
+</div>
+
+
 <p style="font-size:20px;">
     <label for="x_axis_ID">Select Instrument for Y-Axis</label>
-        <select name="x_axis_ID" id="xaxis"  style="font-size:20px">
+        <select name="x_axis_ID" id="x_axis_ID"  style="font-size:20px">
 	    <optgroup>
             % foreach my $instr (@$instrumentlist) {
             <option value="<%= $instr->name %>"><%= $instr->name %></>
@@ -55,7 +67,7 @@
 </div>
 </div>
 <script type="text/javascript">
-displayMultiFileSelect();
+displayMultiSelect();
 % foreach my $instr (@$instrumentlist) {
     instrument["<%= $instr->name %>"] = new Instrument();
     instrument["<%= $instr->name %>"].addName("<%= $instr->name %>");
