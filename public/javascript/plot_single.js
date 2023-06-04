@@ -26,27 +26,6 @@ function onLoadFunction() {
 function Line(color) {
 	this.width = 1;
 	this.color = '';
-	Object.defineProperty(this, "color", {
-		get: function() {
-			return color;
-		},
-		set: function(newColor) {
-			switch (newColor) {
-				case 0:
-					color = 'rgb(150, 50, 255)';
-					break;
-				case 1:
-					color = 'rgb(0, 200, 100)';
-					break;
-				case 2:
-					color = 'rgb(77, 150, 255)';
-					break;
-				default:
-					color = 'rgb(150, 50, 255)';
-			}
-		},
-		configurable: false
-	});
 };
 
 
