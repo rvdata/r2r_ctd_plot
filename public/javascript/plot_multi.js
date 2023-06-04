@@ -89,13 +89,13 @@ var Graph = function(title, xLabel, yLabel) {
 
 var Layout = function(title, xLabel, yLabel) {
 	this.width = 600;
-	this.height = 550;
+	this.height = 750;
 	this.automargin = true;
 	this.margin = {
 		l:50,
 		r:50,
 		b:50,
-		t:80,
+		t:50,
 		pad:4
 	};
 	this.hovermode ='closest';
@@ -107,7 +107,7 @@ var Layout = function(title, xLabel, yLabel) {
 	this.legend = {
 		x: 1,
 		xanchor: 'right',
-		y: 1
+		y: 1.5
 	};
 	this.title = title;
 	this.xaxis = {
