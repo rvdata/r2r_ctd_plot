@@ -1,3 +1,4 @@
+sudo apt install mojolicious
 Web app to display Seabird Scientific data.
 Dependencies: Mojolicious, Plotly.js, Multiselect.js.
 

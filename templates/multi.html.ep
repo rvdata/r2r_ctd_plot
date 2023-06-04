@@ -1,0 +1,98 @@
+% layout 'default';
+% title 'CTD Stations';
+<script type="text/javascript" src="/javascript/plot_multi.js"></script>
+<link rel="stylesheet" href="/css/multi.css">
+<div id=newcontent>
+<p style="text-align:center;"><%= link_to Home  => 'index' %> <%= link_to Single  => 'single' %></p>
+<h1 style="text-align:center;">Select One or More Stations</h1>
+<div id="file_select_form_id"  class="child"  align="center">
+            <form class="form-card" id="cnvselect">
+                <fieldset class="form-fieldset">
+                    <p  style="font-size:20px;">
+                    <label for="file_selection_ID">Select Files</label>
+                    <select class="multiselect" multiple="multiple" name="file_selection_ID[]" id="file_selection_ID" style="width: 200px;">
+                    % foreach my $file (@$stafilelist) {
+                        <option value="<%= $file %>"><%= $file %></option>
+                    %}
+                    <option value="time">Time</>
+                <br></select>
+               </fieldset>
+                <br>
+           </form>
+</div>
+<h1 style="text-align:center;">Instruments to Plot</h1>
+	
+<div style="display:none;" id="myDiv" class="animate-bottom"></div>
+<div id="loader"></div>
+<div style="display:none;" id="overlay" class="animationOverlay"></div>
+
+<div class="parent grid-parent">
+    <div id="x_instr_fomr_id"  class="child"  align="center">
+    <form class="form-card">
+        <fieldset class="form-fieldset">
+            <p style="font-size:20px;">
+            <label for="x_axis_ID">Select One or Two(for diff) X-Axis Intruments</label>
+            <select multiple="multiple" name="x_axis_ID" id="x_axis_ID">
+
+                % foreach my $instr (@$instrumentlist) {
+                        <option value="<%= $instr->name %>"><%= $instr->name %></>
+                %}
+                        <option value="time">Time</>
+
+                <br></select>
+            </p>
+        </fieldset>
+    </form>
+    </div>
+</div>
+
+
+<div align="center">
+<p style="font-size:20px;">
+    <label for="x_axis_ID">Select Instrument for Y-Axis</label>
+        <select name="y_axis_ID" id="y_axis_ID"  style="font-size:20px">
+	    <optgroup>
+            % foreach my $instr (@$instrumentlist) {
+            <option value="<%= $instr->name %>"><%= $instr->name %></>
+	    %}                
+	    <option selected="prDM">prDM</option>
+	    </optgroup>
+            <br>
+	</select>
+</p>
+</div>
+<div align="center">
+	<button type="button" id="cnvSubmit" class="bigbutton" onclick="submitAll()">Display Plot</button>
+</div>
+<table  cols=2 align="center">
+   <tr>
+      <td><div id="custom_plot" style="height: 570px;"></div></td>
+   </tr>
+</table>
+</div>
+<script type="text/javascript">
+onLoadFunction();
+displayMultiSelect();
+% foreach my $instr (@$instrumentlist) {
+    instrument["<%= $instr->name %>"] = new Instrument();
+    instrument["<%= $instr->name %>"].addName("<%= $instr->name %>");
+    instrument["<%= $instr->name %>"].addUnits("<%= $instr->units %>");
+    instrument["<%= $instr->name %>"].addVariable("<%= $instr->quantity_measured %>");
+% }
+    instrument["time"] = new Instrument();
+    instrument["time"].addName("time");
+    instrument["time"].addUnits("Sample");
+    instrument["time"].addVariable("Time");
+% foreach my $pl (@$plots) {
+    plot["<%= $pl->station %>"] = new Plot();
+    plot["<%= $pl->station %>"].addStation("<%= $pl->station %>");
+    plot["<%= $pl->station %>"].addXInstrument(instrument["<%= $pl->x_instrument->name %>"]);
+    plot["<%= $pl->station %>"].addYInstrument(instrument["<%= $pl->y_instrument->name %>"]);
+    % foreach my $val (@{$pl->{x_values}}) {
+    plot["<%= $pl->station %>"].addXValue("<%= $val %>");
+    % }
+    % foreach my $val (@{$pl->{y_values}}) {
+    plot["<%= $pl->station %>"].addYValue("<%= $val %>");
+    % }
+% }
+</script>

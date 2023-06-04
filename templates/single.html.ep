@@ -1,0 +1,135 @@
+% layout 'default';
+% title 'CTD Stations';
+<script type="text/javascript" src="/javascript/plot_single.js"></script>
+<link rel="stylesheet" href="/css/single.css">
+<p style="text-align:center;"><%= link_to Home  => 'index' %> <%= link_to Multiple  => 'multi' %></p>
+<h1 style="text-align:center;">Select Station</h1>
+<div align="center">
+        <table  style="width:100%">
+                <form name="filename" align="center" style="width:100px;text-align:center;">
+                        <select name="filename" style="text-align:center;" class="scrollable" id="fileSelection"   onchange="this.form.submit()">
+ >
+                                <option selected="selected">Select File</option>
+				% foreach my $file (@$stafilelist) {
+			       	    <option value="<%= $file %>"><%= $file %></option>
+			       	% }
+
+                        </select>
+                </form>
+        </table>
+</div>
+% if($fileSelection){
+<h4 style="text-align:center;"> 
+	<p>CTD File <%= $fileSelection %></p>
+
+	% 
+	<%= @$cnv_info[0] %>
+	<%= @$cnv_info[1] %> N
+	<%= @$cnv_info[2] %> 
+	<%= @$cnv_info[3] %> W
+	<%= @$cnv_info[4] %> gmt 
+	%
+
+</h4>
+<div style="display:none;" id="myDiv" class="animate-bottom"></div>
+<div id="loader"></div>
+<div style="display:none;" id="overlay" class="animationOverlay"></div>
+<p>
+<input type="radio" name="timeSel" value="1" checked="checked" display="inline-block"onclick="makeplot();">Depth-based Graphs</input><br>
+<input type="radio" id="time_radio_id" name="timeSel" value="0" display="inline-block"onclick="makeplot();">Time-based Graphs</input>
+</p>
+<script type="text/javascript">
+	% foreach my $instr (@$instrumentlist) {
+       	    instrument["<%= $instr->name %>"] = new Instrument();
+       	    instrument["<%= $instr->name %>"].addName("<%= $instr->name %>");
+       	    instrument["<%= $instr->name %>"].addUnits("<%= $instr->units %>");
+       	    instrument["<%= $instr->name %>"].addVariable("<%= $instr->quantity_measured %>");
+	    
+       	% }
+       	    instrument["time"] = new Instrument();
+            instrument["time"].addName("time");
+       	    instrument["time"].addUnits("Sample");
+       	    instrument["time"].addVariable("Time");
+	    
+            makeplot();
+</script>
+<!--default_plots -->
+<table  cols=2 align="center">
+        <tr>
+                <td><div id="plot1" style="height: 570px;"></div></td>
+                <td><div id="plot2" style="height: 570px;"></div></td>
+        </tr>
+        <tr>
+                <td><div id="plot3" style="height: 570px;"></div></td>
+                <td><div id="plot4" style="height: 570px;"></div></td>
+        </tr>
+        <tr>
+                <td><div id="plot5" style="height: 570px;"></div></td>
+                <td><div id="plot6" style="height: 570px;"></div></td>
+        </tr>
+        <tr>
+                <td><div id="plot7" style="height: 570px;"></div></td>
+                <td><div id="plot8" style="height: 570px;"></div></td>
+        </tr>
+</table>
+<!-- nondefault_plots.html -->
+<!-- nondefault_plots.html -->
+<h1 style="text-align:center;">Custom Plot</h1>
+<div class="parent grid-parent">
+    <div id="instr_form_id"  class="child">
+    <form class="form-card">
+        <fieldset class="form-fieldset">
+            <legend class="form-legend">X-Axis</legend>
+            <p style="font-size:20px;">
+            <label for="y_axis_ID">Select One or More Variables</label>
+            <select multiple="multiple" name="y_axis_ID" id="y_axis_ID">
+
+		% foreach my $instr (@$instrumentlist) {
+       	    		<option value="<%= $instr->name %>"><%= $instr->name %></>
+		%}
+	                <option value="time">Time</>
+
+                <br></select>
+            </p>
+	  	   <p>
+               <input type="radio" name="diffS" value="1" checked="checked">Overlay Variables on One Graph</input><br>
+               <input type="radio" id="diff_id" name="diffS" value="0">Plot the Delta between Two Variables</input>
+            </p>
+        </fieldset>
+    </form>
+    </div>
+    <div id="instr_form_id2"  class="child">
+    <form class="form-card">
+        <fieldset class="form-fieldset">
+            <legend class="form-legend">Y-Axis</legend>
+            <p style="font-size:20px;">
+            <label for="x_axis_ID">Select One Variable (or more if x=Time)</label>
+            <select multiple="multiple" name="x_axis_ID" id="x_axis_ID">
+
+		% foreach my $instr (@$instrumentlist) {
+       	    		<option value="<%= $instr->name %>"><%= $instr->name %></>
+		%}                
+
+
+              <br></select>
+            </p>
+        </fieldset>
+    </form>
+    </div>
+</div>
+<script type="text/javascript">
+displayMultiSelect()
+</script>
+<div align="center">
+<button type="button" class="bigbutton" onClick="makeCustomPlot()">Display Custom Plot</button>
+</div>
+<table  cols=2 align="center">
+   <tr>
+      <td><div id="custom_plot" style="height: 570px;"></div></td>
+   </tr>
+</table>
+
+
+%}
+
+

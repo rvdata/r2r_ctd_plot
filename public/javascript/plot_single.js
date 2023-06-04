@@ -1,3 +1,11 @@
+//20200629 sharding colors to match gnuplot
+//20200701 sharding carved out graph parameters as objects
+//20200702 sharding added plot4 salinity vs temp
+//20200702 sharding added time plots
+//20200720 sharding replaced all "Class" definitions with function calls for Safari
+//20200720 sharding rewrote Math.max() function call to please Safari
+//20200722 sharding hard-coded all default plots
+
 var Instrument = function() {
 	this.name;
 	this.units;
@@ -6,22 +14,8 @@ var Instrument = function() {
 	this.addUnits = function(units){ this.units = units; }
 	this.addVariable = function(variable){ this.variable = variable; }
 }
-var Plot = function() {
-	this.station;
-	this.x_instrument;
-	this.y_instrument;
-	this.x_values = [];
-	this.y_values = [];
-	this.addStation = function(station){ this.station = station; }
-	this.addXInstrument = function(x_instrument){ this.x_instrument = x_instrument; }
-	this.addYInstrument = function(y_instrument){ this.y_instrument = y_instrument; }
-	this.addXValue = function(x_value){ this.x_values.push(x_value); }
-	this.addYValue = function(y_value){ this.y_values.push(y_value); }
-}
 
 instrument = [];
-plot = [];
-stations_selected = [];
 
 function onLoadFunction() {
 	//turn off loader
@@ -223,48 +217,48 @@ var LayoutTime = function(title, xLabel, yLabel, deltaT) {
 };
 
 function displayMultiSelect() {
-	document.getElementById("loader").style.display = "none";
-        document.getElementById("myDiv").style.display = "block";
-	//display multi-file select menu
-	var x_axis_values; //active station
-	var y_axis_values; //list of all stations selected
+	//display multi select menu
+	var x_axis_values; //active instrument
+	var y_axis_values; //list of all instruments selected
 	$x_axis_values = [];
 	$y_axis_values = []; 
 
-	// multi-Selection form for Stations
+	// multi-Selection form for instruments
         $(document).ready(function(){
-		$('#file_selection_ID' ).multi();
+		$('#x_axis_ID' ).multi();
 	});
 	// Selection form
-	$( '#file_selection_ID' ).multi({
-		non_selected_header: 'Available Stations',
-		selected_header: 'Selected Stations'
+	$( '#x_axis_ID' ).multi({
+		non_selected_header: 'Variables',
+		selected_header: 'Selected Variable'
 	});
 	// Selection form
-	$( '#file_selection_ID' ).multi({
+	$( '#x_axis_ID' ).multi({
 		// enable search
 		enable_search: true,
 		// placeholder of search input
 		search_placeholder: 'Search...'
 	});
-	 // multi-Selection form for instruments
-        $(document).ready(function(){
-                $('#y_axis_ID' ).multi();
-        });
-        // Selection form
-        $( '#x_axis_ID' ).multi({
-                non_selected_header: 'Variables',
-                selected_header: 'Selected Variable'
-        });
-        // Selection form
-        $( '#x_axis_ID' ).multi({
-                // enable search
-                enable_search: true,
-                // placeholder of search input
-                search_placeholder: 'Search...'
-        });
-}; 
 
+
+        // multi-Selection form for instruments
+	$(document).ready(function(){
+		$('#y_axis_ID' ).multi();
+	});
+	// Selection form
+	$( '#y_axis_ID' ).multi({
+		non_selected_header: 'Variables',
+		selected_header: 'Selected Variables'
+	});
+	// Selection form
+	$( '#y_axis_ID' ).multi({
+		// enable search
+		enable_search: true,
+		// placeholder of search input
+		search_placeholder: 'Search...'
+	}); 
+
+}; 
 
 function makeplot() {
 	//grap csv data and hand off to plotly.js
@@ -277,6 +271,15 @@ function makeplot() {
 	}); 
 }; 
 
+function makeCustomPlot() {
+	/* turn loader on */
+        document.getElementById("loader").style.display = "";
+        document.getElementById("myDiv").style.display = "";
+
+	Plotly.d3.csv("../ctd.dat", function(data){
+		processCustomData(data)
+	}); 
+}; 
 
 function processDefaultData(allRows) {
 	//most graphs use prDM depth as the y-axis data set.
@@ -307,8 +310,8 @@ function processDefaultData(allRows) {
 
 	/*----------------------Depth vs Temperature-----------------------*/
 	xVariables = [ 't090C', 't190C' ];
-	//console.log("xvars=" + xVariables);
-	//console.log("plot=" + plot);
+	console.log("xvars=" + xVariables);
+	console.log("plot=" + plot);
 	xVariables.forEach(populateData); 
 	function populateData(xVariable, index, array) {
 		if( instrument[xVariable] ){ 
@@ -383,8 +386,8 @@ function processDefaultData(allRows) {
 
 	/*----------------------Depth vs Salinity-----------------------*/
 	xVariables = [ 'sal00', 'sal11' ];
-	//console.log("xvars=" + xVariables);
-	//console.log("plot=" + plot);
+	console.log("xvars=" + xVariables);
+	console.log("plot=" + plot);
 	xVariables.forEach(populateData); 
 	function populateData(xVariable, index, array) {
 		if( instrument[xVariable] ){ 
@@ -438,8 +441,8 @@ function processDefaultData(allRows) {
 
 	/*----------------------Depth vs Oxygen-----------------------*/
 	xVariables = [ 'sbeox0ML_L' ];
-	//console.log("xvars=" + xVariables);
-	//console.log("plot=" + plot);
+	console.log("xvars=" + xVariables);
+	console.log("plot=" + plot);
 	xVariables.forEach(populateData); 
 	function populateData(xVariable, index, array) {
 		if( instrument[xVariable] ){ 
@@ -490,8 +493,8 @@ function processDefaultData(allRows) {
 
 	xVariables = [];
 	xVariables = [ 'sal00' ];
-	//console.log("xvars=" + xVariables);
-	//console.log("plot=" + plot);
+	console.log("xvars=" + xVariables);
+	console.log("plot=" + plot);
 	xVariables.forEach(populateData); 
 	function populateData(xVariable, index, array) {
 		if( instrument[xVariable] ){ 
@@ -529,8 +532,8 @@ function processDefaultData(allRows) {
 	yData[yVariable] =  rawData;
 	/*----------------------Temperature Diff-------------------*/
 	xVariables = [ 't090C', 't190C' ];
-	//console.log("xvars=" + xVariables);
-	//console.log("plot=" + plot);
+	console.log("xvars=" + xVariables);
+	console.log("plot=" + plot);
 	xVariables.forEach(populateData); 
 	function populateData(xVariable, index, array) {
 		if( instrument[xVariable] ){ 
@@ -573,8 +576,8 @@ function processDefaultData(allRows) {
 
 	/*----------------------Conductivity Diff-------------------*/
 	xVariables = [ 'c0S_m', 'c1S_m' ];
-	//console.log("xvars=" + xVariables);
-	//console.log("plot=" + plot);
+	console.log("xvars=" + xVariables);
+	console.log("plot=" + plot);
 	xVariables.forEach(populateData); 
 	function populateData(xVariable, index, array) {
 		if( instrument[xVariable] ){ 
@@ -613,8 +616,8 @@ function processDefaultData(allRows) {
 
 	/*----------------------Transmissometer-----------------------*/
 	xVariables = [ 'CStarTr0' ];
-	//console.log("xvars=" + xVariables);
-	//console.log("plot=" + plot);
+	console.log("xvars=" + xVariables);
+	console.log("plot=" + plot);
 	xVariables.forEach(populateData); 
 	function populateData(xVariable, index, array) {
 		if( instrument[xVariable] ){ 
@@ -667,8 +670,8 @@ function processDefaultData(allRows) {
 
 	/*----------------------Environmental-----------------------*/
 	xVariables = [ 'flECO_AFL', 'turbWETntu0', 'wetCDOM' ];
-	//console.log("xvars=" + xVariables);
-	//console.log("plot=" + plot);
+	console.log("xvars=" + xVariables);
+	console.log("plot=" + plot);
 	xVariables.forEach(populateData); 
 	function populateData(xVariable, index, array) {
 		if( instrument[xVariable] ){ 
@@ -752,70 +755,101 @@ function processDefaultData(allRows) {
 }
 
 
-function makeCustomPlot(stations_selected) {
-	/* turn loader on */
-        document.getElementById("loader").style.display = "";
-        document.getElementById("myDiv").style.display = "";
-	for(i=0; i<stations_selected.length; i++){
-		console.log(stations_selected[i]);
+function processCustomData(allRows) {
+        //get list of x-axis variables from multi-selection drop-down list
+        x_axis_values = $("#x_axis_ID").val();
+        if (x_axis_values == "") {
+                alert("Instrument must be filled out");
+                return false;
+        }
+        $.each(x_axis_values, function (key, value) {
+                x_axis_values.push(value);
+        });
+
+        //get list of y-axis variables from multi-selection drop-down list
+        y_axis_values = $("#y_axis_ID").val();
+        if (y_axis_values == "") {
+                alert("Instrument must be filled out");
+                return false;
+        }
+        $.each(y_axis_values, function (key, value) {
+                y_axis_values.push(value);
+        });
+
+
+	//Get x data from cnv file
+       var xData = [];
+       for (index = 0; index < (x_axis_values.length / 2); index++) {
+	       var xVariable = instrument[x_axis_values[index]].name;
+	       var rawData = [];
+	       for (var i=0; i<allRows.length; i++) {
+		       row = allRows[i];
+		       rawData.push( row[xVariable] );
+	       }
+	       xData[xVariable] =  rawData;
+       }
+	//Get y data from cnv file
+       var yData = [];
+	var isTimePlot = false;
+	for (index = 0; index < (y_axis_values.length / 2); index++) {
+		if( y_axis_values[index] == "time" ){
+			isTimePlot = true;
+		}
+		var yVariable = instrument[y_axis_values[index]].name;
+		var rawData = [];
+		for (var i=0; i<allRows.length; i++) {
+			row = allRows[i];
+			rawData.push( row[yVariable] );
+		}
+		yData[yVariable] =  rawData;
 	}
 
-	filename = "../" + stations_selected[0] + ".dat";
-	Plotly.d3.csv(filename, function(data){
-		processCustomData(data)
-	}); 
-}; 
-
-function processCustomData() {
-	/* turn loader on */
-        document.getElementById("loader").style.display = "";
-        document.getElementById("myDiv").style.display = "";
-	//Object.keys(plot).forEach(key => {
-	//	console.log(key, plot[key].station);
-	//	console.log(key, plot[key].x_instrument.name);
-	//	console.log(key, plot[key].y_instrument.name);
-	//	for(i=0; i <  plot[key].x_values.length; i++) {
-	//		console.log(plot[key].x_values[i]);
-	//	}
-	//});
 
         var graph;	
 	var title;
 	var xLabal;
 	var yLabal;
-	var isTimePlot = false;
-        
-        Object.keys(plot).forEach(key => {
-	    delete(graph);
-	});
 
-	//populate title and X-Axis
-	first_plot=true;
-	Object.keys(plot).forEach(key => {
-		if(first_plot){
-			first_plot=false;
-			title = plot[key].x_instrument.name + " vs " + plot[key].y_instrument.name;
-			yLabel = plot[key].x_instrument.name;
-			xLabel = plot[key].y_instrument.name;
-			graph = new Graph(title, yLabel, xLabel);
-		}
-	}); 
-	if(isTimePlot){
-		Object.keys(plot).forEach(key => {
-			graph.createNewTrace(plot[key].station);
-			graph.pushTraceData(plot[key].x_values);
-		});
-		makePlotlyGraphTime(graph,custom_plot);
-	} else {
-		Object.keys(plot).forEach(key => {
-			graph.pushXData(plot[key].y_values);
-			graph.createNewTrace(plot[key].station);
-			graph.pushTraceData(plot[key].x_values);
-		});
-		makePlotlyGraph(graph,custom_plot);
+
+	title = instrument[x_axis_values[0]].variable + " vs " + instrument[y_axis_values[0]].variable;
+	xLabel = instrument[x_axis_values[0]].variable + " [" + instrument[x_axis_values[0]].units + "]";
+	yLabel = instrument[y_axis_values[0]].variable + " [" + instrument[y_axis_values[0]].units + "]";
+        graph = new Graph(title, yLabel, xLabel);
+	for (index = 0; index < (x_axis_values.length / 2); index++) {
+		graph.pushXData(xData[x_axis_values[index]]);
 	}
-}
 
+	// If Delta plot
+	if (document.getElementById('diff_id').checked) { 
+		array0 = yData[y_axis_values[0]];
+		array1 = yData[y_axis_values[1]];
+		var diff=[];
+		diff = array0.map(function (num, idx) {
+			return num - array1[idx]; 
+		});
+		graph.createNewTrace("Difference");
+		graph.pushTraceData(diff);
+		makePlotlyGraph(graph,custom_plot); 
+	} else {
+		if(isTimePlot){
+			for (index = 0; index < (x_axis_values.length / 2); index++) {
+				graph.createNewTrace(instrument[x_axis_values[index]].name);
+				graph.pushTraceData(yData[x_axis_values[index]]);
+			}
+			makePlotlyGraphTime(graph,custom_plot); 
+		} else {
+			for (index = 0; index < (y_axis_values.length / 2); index++) {
+				graph.createNewTrace(instrument[y_axis_values[index]].name);
+				graph.pushTraceData(yData[y_axis_values[index]]);
+			}
+			makePlotlyGraph(graph,custom_plot); 
+		}
+	}
+
+        var overlayID = document.getElementById("overlay");
+	document.getElementById("loader").style.display = "none";
+	overlayID.style.display="none";
+}
 
 function makePlotlyGraph(graph,div_id){
 	//makes a plot from a Graph object.
@@ -823,14 +857,11 @@ function makePlotlyGraph(graph,div_id){
 	//x and y data because depth is plotted along y-axis even though
 	//it's actually the independent variable.
 
-	var img_jpg= Plotly.d3.select('#jpg-export');
-
-
 	var trace=[];
 	for(index=0; index <  graph.numYDataSets; index++){
 		//create a Trace object for each y-data set. 
 		//NOTE X and Y VALUES ARE SWAPPPED HERE.
-		trace[index] = new Trace(graph.y[index], graph.x[index], index, graph.traceName[index]);
+		trace[index] = new Trace(graph.y[index], graph.x[0], index, graph.traceName[index]);
 	}
 
         var layout = new Layout(graph.title, graph.xLabel, graph.yLabel);
@@ -839,32 +870,11 @@ function makePlotlyGraph(graph,div_id){
 	for(index=0; index < trace.length ; index++){
 		data.push(trace[index]);
 	}
-	Plotly.newPlot(div_id, data, layout)
-	
-	// static image in jpg format
-
-        .then(
-		function(gd)
-		{
-			Plotly.toImage(gd,{height:600,width:600})
-				.then(
-					function(url)
-					{
-						img_jpg.attr("src", url, {setBackground: setBackground});
-					}
-				)
-		});
-
-	//stop loader
-        var overlayID = document.getElementById("overlay");
-	document.getElementById("loader").style.display = "none";
-	overlayID.style.display="none";
+	Plotly.newPlot(div_id, data, layout);
+        //var overlayID = document.getElementById("overlay");
+	//document.getElementById("loader").style.display = "none";
+	//overlayID.style.display="none";
 };
-
-function setBackground(gd) {
-  gd._fullLayout.paper_bgcolor = 'rgba(34,0,100,50)'
-  gd._fullLayout.plot_bgcolor = 'rgba(90,0,0,0)'
-}
 
 function makePlotlyGraphTime(graph,div_id){
 	//for time-based graphs, this function calls 
@@ -890,33 +900,7 @@ function makePlotlyGraphTime(graph,div_id){
 		data.push(trace[index]);
 	}
 	Plotly.newPlot(div_id, data, layout);
-        var overlayID = document.getElementById("overlay");
-	document.getElementById("loader").style.display = "none";
-	overlayID.style.display="none";
+//        var overlayID = document.getElementById("overlay");
+//	document.getElementById("loader").style.display = "none";
+//	overlayID.style.display="none";
 };
-function submitAll() {
-     //get list of stations from multi-selection drop-down list
-     cnv_values = $("#file_selection_ID").val();
-     if (cnv_values == "") {
-         alert("Station must be filled out");
-         return false;
-     }
-
-    // Construct data string
-    var dataString = $("#cnvselect, #x_axis_ID, #y_axis_ID").serialize();
-
-    // Log in console so you can see the final serialized data sent to AJAX
-    //console.log(dataString);
-
-        //url: 'ctdplot.pl',
-    $.ajax( {
-        async: false,
-        type: 'GET',
-        data: dataString,
-        success: function(data) {
-           // console.log(data);
-            $('#newcontent').html(data);
-        }
-    });
-    processCustomData();
-}

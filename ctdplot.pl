@@ -44,8 +44,12 @@ struct( Plot => {
 
 my @instruments;
 my $instruments = [];
-
+my @cnv_info;
 get '/' => sub ($c) {
+       	$c->render;
+} => 'index';
+
+get '/multi' => sub ($c) {
   #get entire list of cnv files from data dir for user to select from
   opendir DATADIR, "$datadir" or die "no data directory\n";
   my @cnv_filenames =  sort grep (/cdn$|cnv$/, readdir (DATADIR));
@@ -152,8 +156,36 @@ get '/' => sub ($c) {
   $c->stash(plots		=> \@plots);
   $c->stash(stafilelist		=> \@cnv_filenames);
   $c->stash(instrumentlist	=> \@instruments);
-  $c->render(template		=> 'index');
+  $c->render(template		=> 'multi');
 };
 
-#app->log->debug('Starting application');
+get '/single' => sub ($c) {
+  #get cnv file name from user, initially equal to ''
+  my $filename = $c->param('filename');
+
+  #get list of cnv files
+  my $datadir = "/home/data/armstrong/ctd/";
+  opendir DATADIR, "$datadir" or die "no data directory\n";
+  my @stafiles =  sort grep (/cdn$|cnv$/, readdir (DATADIR));
+  close DATADIR;
+
+  my $input_filename = "${datadir}/${filename}";
+  # Helper to lazy initialize and store instrument list object model
+  helper instr_list => sub { state $instr_list = CtdPlot::Model::InstrListFromCNV->new };
+  #get list of instruments from cnv file
+  @instruments = $c->instr_list->get($input_filename);
+  
+  my $out_file = "public/ctd.dat";
+  # Helper to lazy initialize and store csv object model
+  helper cnv2csv => sub { state $cnv2csv = CtdPlot::Model::CNV2CSV->new };
+  #convert cnv to csv for plotly
+  @cnv_info = $c->cnv2csv->convert($input_filename,$out_file,\@instruments);
+
+  $c->stash(fileSelection	=> $filename);
+  $c->stash(stafilelist		=> \@stafiles);
+  $c->stash(instrumentlist	=> \@instruments);
+  $c->stash(cnv_info		=> \@cnv_info);
+  $c->render( template		=> 'single');
+};
+
 app->start;
