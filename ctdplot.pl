@@ -164,7 +164,6 @@ get '/single' => sub ($c) {
   my $filename = $c->param('filename');
 
   #get list of cnv files
-  my $datadir = "/home/data/armstrong/ctd/";
   opendir DATADIR, "$datadir" or die "no data directory\n";
   my @stafiles =  sort grep (/cdn$|cnv$/, readdir (DATADIR));
   close DATADIR;
