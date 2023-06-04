@@ -773,9 +773,9 @@ function processCustomData() {
 	Object.keys(plot).forEach(key => {
 		if(first_plot){
 			first_plot=false;
-			title = plot[key].x_instrument.name + " vs " + plot[key].y_instrument.name;
-			yLabel = plot[key].x_instrument.name;
-			xLabel = plot[key].y_instrument.name;
+			title = plot[key].x_instrument.variable + " vs " + plot[key].y_instrument.variable;
+			yLabel = plot[key].x_instrument.variable  + " [" + plot[key].x_instrument.units + "]";;
+			xLabel = plot[key].y_instrument.variable  + " [" + plot[key].y_instrument.units + "]";;
 			graph = new Graph(title, yLabel, xLabel);
 		}
 	}); 
