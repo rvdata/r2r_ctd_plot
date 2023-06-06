@@ -273,6 +273,15 @@ function displayMultiSelect() {
         });
 
 	$('#x_axis_ID' ).multi();
+
+	//retain y selection, set prDM as default
+	yValue = localStorage.getItem("ySelection");
+	let element = document.getElementById('y_axis_ID');
+	if(yValue){
+		element.value = yValue;
+	} else {
+		element.value = 'prDM';
+	}
 }; 
 
 
@@ -912,7 +921,9 @@ function submitAll() {
 
      //store current list of instruments x-axis
      localStorage.setItem("xSelection", x_axis_values);
-     console.log('new xaxis: ', localStorage.getItem("xSelection"));
+
+     y_axis_values = $("#y_axis_ID").val();
+     localStorage.setItem("ySelection", y_axis_values);
 
      // Construct data string
      var dataString = $("#cnvselect, #x_axis_ID, #y_axis_ID").serialize();
