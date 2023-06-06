@@ -202,46 +202,57 @@ var LayoutTime = function(title, xLabel, yLabel, deltaT) {
 };
 
 function displayMultiSelect() {
-	document.getElementById("loader").style.display = "none";
-        document.getElementById("myDiv").style.display = "block";
-	//display multi-file select menu
-	var x_axis_values; //active station
-	var y_axis_values; //list of all stations selected
-	$x_axis_values = [];
-	$y_axis_values = []; 
+        console.log('old xaxis: ', localStorage.getItem("xSelection"));
+        console.log('old cnv: ', localStorage.getItem("cnvSelection"));
 
-	// multi-Selection form for Stations
+	// get current  Stations selected
+	selectedValues = localStorage.getItem("cnvSelection");
+	if(selectedValues){
+		selectedValues = selectedValues.split(',');
+	}
+	console.log("cnv: ", selectedValues);
+	//document.getElementById("loader").style.display = "none";
+        //document.getElementById("myDiv").style.display = "block";
+	//display multi-file select menu
+	
+	// multi-Selection form for files (Stations)
         $(document).ready(function(){
-		$('#file_selection_ID' ).multi();
+		$('#file_selection_ID' ).multi({
+			buttonWidth: '400px',
+	 		non_selected_header: 'Available Stations',
+	 		selected_header: 'Selected Stations',
+	 		enable_search: true,
+	 		search_placeholder: 'Search...',
+		});
 	});
-	// Selection form
-	$( '#file_selection_ID' ).multi({
-		non_selected_header: 'Available Stations',
-		selected_header: 'Selected Stations'
-	});
-	// Selection form
-	$( '#file_selection_ID' ).multi({
-		// enable search
-		enable_search: true,
-		// placeholder of search input
-		search_placeholder: 'Search...'
-	});
+
+	//for redisplay of form:
+	//https://github.com/fabianlindfors/multi.js/issues/15
+        $(".multi-wrapper").remove("");
+        $("#file_selection_ID").removeAttr("data-multijs");
+        $("#file_selection_ID").val(selectedValues);
+	$('#file_selection_ID' ).multi();
+
+
+	selectedValues = localStorage.getItem("xSelection");
+	if(selectedValues){
+		selectedValues = selectedValues.split(',');
+	}
+	console.log("xaxis: ", selectedValues);
+
 	 // multi-Selection form for instruments
         $(document).ready(function(){
-                $('#y_axis_ID' ).multi();
-        });
-        // Selection form
-        $( '#x_axis_ID' ).multi({
-                non_selected_header: 'Variables',
-                selected_header: 'Selected Variable'
-        });
-        // Selection form
-        $( '#x_axis_ID' ).multi({
-                // enable search
-                enable_search: true,
-                // placeholder of search input
-                search_placeholder: 'Search...'
-        });
+		$('#x_axis_ID' ).multi({
+			buttonWidth: '400px',
+                	non_selected_header: 'Variables',
+	                selected_header: 'Selected Variable',
+       		        enable_search: true,
+       		        search_placeholder: 'Search...'
+		});
+	});
+        $("#x_axis_ID").append(selectedValues);
+        $("#x_axis_ID").val(selectedValues);
+	$('#x_axis_ID' ).multi();
 }; 
 
 
@@ -857,28 +868,45 @@ function makePlotlyGraphTime(graph,div_id){
 	overlayID.style.display="none";
 };
 function submitAll() {
-     //get list of stations from multi-selection drop-down list
+     //make sure at least one station selected
      cnv_values = $("#file_selection_ID").val();
-     if (cnv_values == "") {
-         alert("Station must be filled out");
+     if (cnv_values.length < 1) {
+         alert("Please select at least one Station");
          return false;
      }
 
-    // Construct data string
-    var dataString = $("#cnvselect, #x_axis_ID, #y_axis_ID").serialize();
+     //store current list of stations
+     localStorage.setItem("cnvSelection", cnv_values);
 
-    // Log in console so you can see the final serialized data sent to AJAX
-    console.log(dataString);
+     //limit number of x-axis instruments from multi-selection form 0<num_instr<3
+     x_axis_values = $("#x_axis_ID").val();
+     if (x_axis_values.length < 1) {
+         alert("Please select at least one X-Axis instrument");
+         return false;
+     }
+     if (x_axis_values.length > 2) {
+         alert("Please select no more than two X-Axis instruments");
+         return false;
+     }
 
-        //url: 'ctdplot.pl',
-    $.ajax( {
-        async: false,
-        type: 'GET',
-        data: dataString,
-        success: function(data) {
+
+     //store current list of instruments x-axis
+     localStorage.setItem("xSelection", x_axis_values);
+     console.log('new xaxis: ', localStorage.getItem("xSelection"));
+
+     // Construct data string
+     var dataString = $("#cnvselect, #x_axis_ID, #y_axis_ID").serialize();
+
+     // Log in console so you can see the final serialized data sent to AJAX
+     //console.log(dataString);
+     $.ajax( {
+         async: false,
+         type: 'GET',
+         data: dataString,
+         success: function(data) {
            // console.log(data);
-            $('#newcontent').html(data);
-        }
-    });
-    processCustomData();
+             $('#newcontent').html(data);
+         }
+     });
+     processCustomData();
 }
