@@ -202,20 +202,18 @@ var LayoutTime = function(title, xLabel, yLabel, deltaT) {
 };
 
 function displayMultiSelect() {
-        console.log('old xaxis: ', localStorage.getItem("xSelection"));
-        console.log('old cnv: ', localStorage.getItem("cnvSelection"));
-
 	// get current  Stations selected
 	selectedValues = localStorage.getItem("cnvSelection");
 	if(selectedValues){
 		selectedValues = selectedValues.split(',');
 	}
-	console.log("cnv: ", selectedValues);
 	//document.getElementById("loader").style.display = "none";
         //document.getElementById("myDiv").style.display = "block";
 	//display multi-file select menu
 	
 	// multi-Selection form for files (Stations)
+        $(".multi-wrapper").remove("");
+        $("#file_selection_ID").removeAttr("data-multijs");
         $(document).ready(function(){
 		$('#file_selection_ID' ).multi({
 			buttonWidth: '400px',
@@ -228,9 +226,19 @@ function displayMultiSelect() {
 
 	//for redisplay of form:
 	//https://github.com/fabianlindfors/multi.js/issues/15
-        $(".multi-wrapper").remove("");
-        $("#file_selection_ID").removeAttr("data-multijs");
         $("#file_selection_ID").val(selectedValues);
+	 // Selection form
+        $( '#file_selection_ID' ).multi({
+                non_selected_header: 'Available Stations',
+                selected_header: 'Selected Stations'
+        });
+        // Selection form
+        $( '#file_selection_ID' ).multi({
+                // enable search
+                enable_search: true,
+                // placeholder of search input
+                search_placeholder: 'Search...'
+        });
 	$('#file_selection_ID' ).multi();
 
 
@@ -238,7 +246,6 @@ function displayMultiSelect() {
 	if(selectedValues){
 		selectedValues = selectedValues.split(',');
 	}
-	console.log("xaxis: ", selectedValues);
 
 	 // multi-Selection form for instruments
         $(document).ready(function(){
@@ -252,6 +259,19 @@ function displayMultiSelect() {
 	});
         $("#x_axis_ID").append(selectedValues);
         $("#x_axis_ID").val(selectedValues);
+	 // Selection form
+        $( '#x_axis_ID' ).multi({
+                non_selected_header: 'Variables',
+                selected_header: 'Selected Variable'
+        });
+        // Selection form
+        $( '#x_axis_ID' ).multi({
+                // enable search
+                enable_search: true,
+                // placeholder of search input
+                search_placeholder: 'Search...'
+        });
+
 	$('#x_axis_ID' ).multi();
 }; 
 
