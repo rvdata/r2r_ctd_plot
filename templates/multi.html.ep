@@ -4,13 +4,16 @@
 <link rel="stylesheet" href="/css/multi.css">
 <div id=newcontent>
 <p style="text-align:center;"><%= link_to Home  => 'index' %> <%= link_to Single  => 'single' %></p>
+<table border="1" width="500">
+	<tr>
+		<th width="50%">
 <h1 style="text-align:center;">Select One or More Stations</h1>
-<div id="file_select_form_id"  class="child"  align="center">
+<div id="file_select_form_id"  class="child"  align="left">
             <form class="form-card" id="cnvselect">
                 <fieldset class="form-fieldset">
-                    <p  style="font-size:20px;">
+                    <p  style="font-size:20px; width:600px;">
                     <label for="file_selection_ID">Select Files</label>
-                    <select class="multiselect" multiple="multiple" name="file_selection_ID[]" id="file_selection_ID" style="width: 200px;">
+                    <select class="multiselect" multiple="multiple" name="file_selection_ID[]" id="file_selection_ID">
                     % foreach my $file (@$stafilelist) {
                         <option value="<%= $file %>"><%= $file %></option>
                     %}
@@ -20,6 +23,8 @@
                 <br>
            </form>
 </div>
+		</th>
+		<th>
 <h1 style="text-align:center;">Instruments to Plot</h1>
 	
 <div style="display:none;" id="myDiv" class="animate-bottom"></div>
@@ -45,7 +50,10 @@
     </form>
     </div>
 </div>
+		</th>
 
+	</tr>
+</table>
 
 <div align="center">
 <p style="font-size:20px;">
@@ -66,7 +74,7 @@
 </div>
 <table  cols=2 align="center">
    <tr>
-      <td><div id="custom_plot" style="height: 570px;"></div></td>
+      <td><div id="custom_plot" style="height: 570px;"  align="center"></div></td>
    </tr>
 </table>
 </div>
