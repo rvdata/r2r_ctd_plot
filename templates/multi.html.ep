@@ -7,12 +7,12 @@
 <table border="1" width="500">
 	<tr>
 		<th width="50%">
-<h1 style="text-align:center;">Select One or More Stations</h1>
+<h1 style="text-align:center;">Stations to Plot</h1>
 <div id="file_select_form_id"  class="child"  align="left">
             <form class="form-card" id="cnvselect">
                 <fieldset class="form-fieldset">
                     <p  style="font-size:20px; width:600px;">
-                    <label for="file_selection_ID">Select Files</label>
+                    <label for="file_selection_ID">Select One or More Stations</label>
                     <select class="multiselect" multiple="multiple" name="file_selection_ID[]" id="file_selection_ID">
                     % foreach my $file (@$stafilelist) {
                         <option value="<%= $file %>"><%= $file %></option>
