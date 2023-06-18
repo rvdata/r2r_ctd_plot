@@ -74,7 +74,7 @@
 </div>
 <table  cols=2 align="center">
    <tr>
-      <td><div id="custom_plot" style="height: 570px;"  align="center"></div></td>
+      <td><div id="custom_plot" style="height: 570px"  align="center"></div></td>
    </tr>
 </table>
 </div>

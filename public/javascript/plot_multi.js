@@ -40,6 +40,8 @@ var Trace = function(x, y, color, name) {
 	this.y = y;
 	this.name = name;
 	this.type = 'scatter';
+	//this.hovertemplate = '<i></i>%{y:.2f}' + '<br><b></b>%{x}<br>';
+	this.hovertemplate = '(%{y:.2f}' + ',%{x})';
 	this.line = new Line(color);
 };
 
@@ -88,14 +90,14 @@ var Graph = function(title, xLabel, yLabel) {
 };
 
 var Layout = function(title, xLabel, yLabel) {
-	this.width = 600;
-	this.height = 750;
+	this.width = 700;
+//	this.height = 700;
 	this.automargin = true;
 	this.margin = {
-		l:50,
-		r:50,
-		b:50,
-		t:50,
+		l:100,
+		r:100,
+		b:100,
+		t:100,
 		pad:4
 	};
 	this.hovermode ='closest';
@@ -104,11 +106,11 @@ var Layout = function(title, xLabel, yLabel) {
 	this.xaxis;
 	this.yaxis;
 	this.paper_bgcolor='lightblue'
-	this.legend = {
-		x: 1,
-		xanchor: 'right',
-		y: 1.5
-	};
+//	this.legend = {
+//		x: 2,
+//		xanchor: 'right',
+//		y: 1.5
+//	};
 	this.title = title;
 	this.xaxis = {
 		title: xLabel,
@@ -855,6 +857,9 @@ function makePlotlyGraph(graph,div_id){
 	for(index=0; index < trace.length ; index++){
 		data.push(trace[index]);
 	}
+	var config = {responsive: true}; 
+
+	//Plotly.newPlot(div_id, data, layout, config);
 	Plotly.newPlot(div_id, data, layout);
 	
 	//stop loader
