@@ -1,14 +1,14 @@
 Web app to display Seabird Scientific data.
 Dependencies: mojolicious.org
-To install Mojolicious:
-1. As per mojolicious.org: curl -L https://cpanmin.us | perl - -M https://cpan.metacpan.org -n Mojolicious
-2. Should also be able to "sudo apt install mojolicious"
+To install Mojolicious as sudo or as root:
+As per mojolicious.org: 
+	sudo curl -L https://cpanmin.us | perl - -M https://cpan.metacpan.org -n Mojolicious
 
 Note: The app uses these libraries but they are shipped with the source code:
 1. https://plotly.com/javascript 
 2. https://fabianlindfors.se/multijs/
 
-to run as a background process:
+To run as a background process:
 nohup ./ctdplot.pl daemon -l http://<ip_addr>:<port> &
 Example:
 nohup ./ctdplot.pl daemon -l http://192.168.1.110:8080 &
@@ -16,8 +16,10 @@ nohup ./ctdplot.pl daemon -l http://192.168.1.110:8080 &
 Note even though it says it's a daemon, it isn't. 
 So need to run as a background process with nohup.
 
-The default dir is /home/data/armstrong/ctd/
+The default dir is /home/data/ctd/
+
 But this can be given with the -d option:
 nohup ./ctdplot.pl -d <ctd_dir> daemon -l http://<ip_addr>:<port> &
-Note: the dir needs to end with a backslash, for example:
+
+IMPORTANT: the dir where the processed CTD data is needs to end with a backslash, for example:
 nohup ./ctdplot.pl -d /home/my_data/ctd/ daemon -l http://192.168.1.110:8080 &

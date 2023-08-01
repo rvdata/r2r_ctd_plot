@@ -12,7 +12,7 @@ use CtdPlot::Model::CNV2CSV;
 use CtdPlot::Model::getDataFromCNV;
 use CtdPlot::Model::getDeltaDataFromCNV;
 
-my $datadir = "/home/data/armstrong/ctd/";
+my $datadir = "/home/data/ctd/";
 my $index=0;
 my $Debug=1;
 #if -d option given, override datadir and remove from ARGV before passing to mojo
