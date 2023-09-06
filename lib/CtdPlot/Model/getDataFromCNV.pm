@@ -17,9 +17,9 @@ sub get_data($self, $cnv_fullpath_name, $x_instrument, $y_instrument){
 	    my $xval = $line[$x_instrument->number];
 	    my $yval = $line[$y_instrument->number];
 
-	    #prDM must be negated
-	    $xval = ($x_instrument->name eq "prDM") ?  -$xval : $xval;
-	    $yval = ($y_instrument->name eq "prDM") ?  -$yval : $yval;
+	    #prDM,depSM must be negated
+	    $xval = (($x_instrument->name eq "prDM")  or ($x_instrument->name eq "depSM")) ?  -$xval : $xval;
+	    $yval = (($y_instrument->name eq "prDM")  or ($y_instrument->name eq "depSM")) ?  -$yval : $yval;
 
 	    push(@x_instr_data,$xval);
 	    push(@y_instr_data,$yval);
