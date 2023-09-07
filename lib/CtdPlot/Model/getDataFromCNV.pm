@@ -12,7 +12,7 @@ sub get_data($self, $cnv_fullpath_name, $x_instrument, $y_instrument){
     #open cnv file
     open (IN, $cnv_fullpath_name)  or die "ERROR: $cnv_fullpath_name not found";
     while(<IN>){
-        if(!/\*/ && !/\#/){
+        if(!/\*/ && !/\#/){ #remove comments
             my @line = split;
 	    my $xval = $line[$x_instrument->number];
 	    my $yval = $line[$y_instrument->number];

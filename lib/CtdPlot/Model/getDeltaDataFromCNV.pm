@@ -18,8 +18,8 @@ sub get_delta_data($self, $cnv_fullpath_name, $x_instrument1, $x_instrument2, $y
 	    my $x2val = $line[$x_instrument2->number];
 	    my $yval = $line[$y_instrument->number];
 
-	    #prDM must be negated
-	    $yval = ($y_instrument->name eq "prDM") ?  -$yval : $yval;
+	    #prDM,depSM must be negated
+	    $yval = (($y_instrument->name eq "prDM") or ($y_instrument->name eq "depSM")) ?  -$yval : $yval;
 
 	    push(@x_instr_data,$x1val-$x2val);
 	    push(@y_instr_data,$yval);

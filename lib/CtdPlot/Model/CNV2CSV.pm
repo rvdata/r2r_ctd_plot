@@ -96,8 +96,8 @@ sub convert  ( $self, $in_file, $out_file, $aref) {
                         my $k = $aref->[0];
                         for($index= 0; $index < $num_instruments-1; $index++){
                                 $k = $aref->[$index];
-                                #prDM must be negated
-                                if( ($k->name) eq "prDM"){
+                                #prDM, depSM must be negated
+                                if( ($k->name) eq "prDM" or ($k->name) eq "depSM"){
                                         printf OUT "%s, ", -$line[$index];
                                 } else {
                                         printf OUT "%s, ", $line[$index];

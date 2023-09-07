@@ -14,11 +14,11 @@ use CtdPlot::Model::getDeltaDataFromCNV;
 
 my $datadir = "/home/data/ctd/";
 my $index=0;
-my $Debug=1;
+my $Debug=0;
 #if -d option given, override datadir and remove from ARGV before passing to mojo
 foreach my $arg (@ARGV) {
     if($ARGV[$index] eq "-d"){
-       $datadir = $ARGV[$index+1];
+       $datadir = $ARGV[$index+1] . "/";
        splice(@ARGV, $index, 1);
        splice(@ARGV, $index, 1);
        last;
@@ -58,10 +58,15 @@ get '/multi' => sub ($c) {
   #parse an arbitrary station to get instrument list, all stations must be same instrument list
   if(@cnv_filenames){
       my $cnv_filename = $cnv_filenames[0];
+      print "cnv file: $cnv_filename\n" if $Debug;
       my $cnv_fullpath_name = "${datadir}${cnv_filename}";
       helper instr_list => sub { state $instr_list = CtdPlot::Model::InstrListFromCNV->new };
       #returns array of structs of instruments
       @instruments = $c->instr_list->get($cnv_fullpath_name);
+  }
+  foreach my $instr (@instruments){
+	  bless $instr, 'Instrument';
+	  print "Parsing " . $instr->name . "\n" if $Debug;
   }
 
   my @cnv_files_selected=();
@@ -146,6 +151,11 @@ get '/multi' => sub ($c) {
       }
 
       @{$plots[$index]->{x_values} } = @{ dclone($x_values) };
+      if($Debug){
+          foreach my $val (@{$plots[$index]->{x_values}}) {
+              print "x_val: $val\n";
+	  }
+      }
       @{$plots[$index]->{y_values} } = @{ dclone($y_values) };
 
       $index++;
@@ -173,6 +183,7 @@ get '/single' => sub ($c) {
   helper instr_list => sub { state $instr_list = CtdPlot::Model::InstrListFromCNV->new };
   #get list of instruments from cnv file
   @instruments = $c->instr_list->get($input_filename);
+
   
   my $out_file = "public/ctd.dat";
   # Helper to lazy initialize and store csv object model
