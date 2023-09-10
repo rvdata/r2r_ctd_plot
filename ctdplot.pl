@@ -11,10 +11,11 @@ use CtdPlot::Model::InstrListFromCNV;
 use CtdPlot::Model::CNV2CSV;
 use CtdPlot::Model::getDataFromCNV;
 use CtdPlot::Model::getDeltaDataFromCNV;
+use Array::Utils;
 
 my $datadir = "/home/data/ctd/";
 my $index=0;
-my $Debug=0;
+my $Debug=1;
 #if -d option given, override datadir and remove from ARGV before passing to mojo
 foreach my $arg (@ARGV) {
     if($ARGV[$index] eq "-d"){
@@ -49,24 +50,55 @@ get '/' => sub ($c) {
        	$c->render;
 } => 'index';
 
-get '/multi' => sub ($c) {
   #get entire list of cnv files from data dir for user to select from
   opendir DATADIR, "$datadir" or die "no data directory\n";
   my @cnv_filenames =  sort grep (/cdn$|cnv$/, readdir (DATADIR));
   close DATADIR;
 
-  #parse an arbitrary station to get instrument list, all stations must be same instrument list
-  if(@cnv_filenames){
-      my $cnv_filename = $cnv_filenames[0];
+  #initialize instrument list with a random file
+  my $cnv_filename = $cnv_filenames[0];
+  print "cnv file: $cnv_filename\n" if $Debug;
+  my $cnv_fullpath_name = "${datadir}${cnv_filename}";
+  @instruments = CtdPlot::Model::InstrListFromCNV->get($cnv_fullpath_name);
+  my @instr_names;
+  foreach my $instr (@instruments){
+        print "instr: " . $instr->name . "\n";
+	push(@instr_names,$instr->name);
+  }
+  
+  #search thru all files to make sure instrument list is complete
+  my $not_found_name = "";
+  foreach my $cnv_filename (@cnv_filenames){
       print "cnv file: $cnv_filename\n" if $Debug;
       my $cnv_fullpath_name = "${datadir}${cnv_filename}";
-      helper instr_list => sub { state $instr_list = CtdPlot::Model::InstrListFromCNV->new };
       #returns array of structs of instruments
-      @instruments = $c->instr_list->get($cnv_fullpath_name);
+      my @instrs = CtdPlot::Model::InstrListFromCNV->get($cnv_fullpath_name);
+      my $found = 0;
+      foreach my $instr0 (@instrs){
+	      $found = 0;
+	      foreach my $instr1 (@instruments){
+		      if($instr1->name eq $instr0->name){
+			      $found = 1;
+			      last;
+		      }
+	      }
+	      if(!$found){
+		      if($instr0->name ne $not_found_name){
+			      $not_found_name = $instr0->name;
+			      push(@instruments, $instr0);
+		      }
+	      }
+      }
   }
+
+  foreach my $instr (@instruments){
+            print "instr: " . $instr->name . "\n" if $Debug;
+  }
+
+get '/multi' => sub ($c) {
   foreach my $instr (@instruments){
 	  bless $instr, 'Instrument';
-	  print "Parsing " . $instr->name . "\n" if $Debug;
+	  print "Intrument: " . $instr->name . "\n" if $Debug;
   }
 
   my @cnv_files_selected=();
@@ -78,13 +110,20 @@ get '/multi' => sub ($c) {
   for my $key (@{$c->req()->params()->names}) {
       my $param_refs = $c->req()->every_param($key);
       if($key =~ /file_selection_ID/){
-          foreach (@$param_refs){ push(@cnv_files_selected,$_); }
+          foreach (@$param_refs){ 
+		  print "FILE SELECTED: $_\n" if $Debug;
+		  push(@cnv_files_selected,$_); 
+	  }
       }elsif($key =~ /x_axis/){
           foreach (@$param_refs){ 
+		  print "X_AXIS SELECTED: $_\n" if $Debug;
 		  push(@x_axes_selected,$_); 
 	  }
       }elsif($key =~ /y_axis/){
-          foreach (@$param_refs){ $y_axis = $_; }
+          foreach (@$param_refs){ 
+		  print "Y_AXIS SELECTED: $_\n" if $Debug;
+		  $y_axis = $_; 
+	  }
       }else{ print STDERR "ERROR\n" ; }
 
   };
@@ -153,7 +192,7 @@ get '/multi' => sub ($c) {
       @{$plots[$index]->{x_values} } = @{ dclone($x_values) };
       if($Debug){
           foreach my $val (@{$plots[$index]->{x_values}}) {
-              print "x_val: $val\n";
+		  #print "x_val: $val\n";
 	  }
       }
       @{$plots[$index]->{y_values} } = @{ dclone($y_values) };
@@ -199,3 +238,4 @@ get '/single' => sub ($c) {
 };
 
 app->start;
+
