@@ -14,12 +14,12 @@ sub get_data($self, $cnv_fullpath_name, $x_instrument, $y_instrument){
     while(<IN>){
         if(!/\*/ && !/\#/){ #remove comments
             my @line = split;
-	    my $xval = $line[$x_instrument->number];
-	    my $yval = $line[$y_instrument->number];
+	    my $xval = $line[$x_instrument->{_column}];
+	    my $yval = $line[$y_instrument->{_column}];
 
 	    #prDM,depSM must be negated
-	    $xval = (($x_instrument->name eq "prDM")  or ($x_instrument->name eq "depSM")) ?  -$xval : $xval;
-	    $yval = (($y_instrument->name eq "prDM")  or ($y_instrument->name eq "depSM")) ?  -$yval : $yval;
+	    $xval = (($x_instrument->{_name} eq "prDM")  or ($x_instrument->{_name} eq "depSM")) ?  -$xval : $xval;
+	    $yval = (($y_instrument->{_name} eq "prDM")  or ($y_instrument->{_name} eq "depSM")) ?  -$yval : $yval;
 
 	    push(@x_instr_data,$xval);
 	    push(@y_instr_data,$yval);
@@ -29,3 +29,4 @@ sub get_data($self, $cnv_fullpath_name, $x_instrument, $y_instrument){
 return (\@x_instr_data,\@y_instr_data);
 }
 1;
+

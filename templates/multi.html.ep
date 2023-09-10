@@ -40,7 +40,7 @@
             <select multiple="multiple" name="x_axis_ID" id="x_axis_ID">
 
                 % foreach my $instr (@$instrumentlist) {
-                        <option value="<%= $instr->name %>"><%= $instr->name %></>
+                        <option value="<%= $instr %>"><%= $instr %></>
                 %}
                         <option value="time">Time</>
 
@@ -61,7 +61,7 @@
         <select name="y_axis_ID" id="y_axis_ID"  style="font-size:20px">
 	    <optgroup>
             % foreach my $instr (@$instrumentlist) {
-            <option value="<%= $instr->name %>"><%= $instr->name %></>
+            <option value="<%= $instr %>"><%= $instr %></>
 	    %}                
 	    <option selected="prDM">prDM</option>
 	    </optgroup>
@@ -82,10 +82,8 @@
 onLoadFunction();
 displayMultiSelect();
 % foreach my $instr (@$instrumentlist) {
-    instrument["<%= $instr->name %>"] = new Instrument();
-    instrument["<%= $instr->name %>"].addName("<%= $instr->name %>");
-    instrument["<%= $instr->name %>"].addUnits("<%= $instr->units %>");
-    instrument["<%= $instr->name %>"].addVariable("<%= $instr->quantity_measured %>");
+    instrument["<%= $instr %>"] = new Instrument();
+    instrument["<%= $instr %>"].addName("<%= $instr %>");
 % }
     instrument["time"] = new Instrument();
     instrument["time"].addName("time");
@@ -94,8 +92,8 @@ displayMultiSelect();
 % foreach my $pl (@$plots) {
     plot["<%= $pl->station %>"] = new Plot();
     plot["<%= $pl->station %>"].addStation("<%= $pl->station %>");
-    plot["<%= $pl->station %>"].addXInstrument(instrument["<%= $pl->x_instrument->name %>"]);
-    plot["<%= $pl->station %>"].addYInstrument(instrument["<%= $pl->y_instrument->name %>"]);
+    plot["<%= $pl->station %>"].addXInstrument(instrument["<%= $pl->x_instrument->{_name} %>"]);
+    plot["<%= $pl->station %>"].addYInstrument(instrument["<%= $pl->y_instrument->{_name} %>"]);
     % foreach my $val (@{$pl->{x_values}}) {
     plot["<%= $pl->station %>"].addXValue("<%= $val %>");
     % }
