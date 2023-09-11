@@ -93,6 +93,7 @@ get '/multi' => sub ($c) {
   #get selected data set from each cnv file
   my $x_axis_instrument;
   my $y_axis_instrument;
+  my $x_axis2_instrument = [];
   foreach my $cnv_file (@cnv_files_selected) {
       my $x_values;
       my $y_values;
@@ -113,19 +114,15 @@ get '/multi' => sub ($c) {
       $plots[$index]->x_instrument($x_axis_instrument);
 
       #if there's more than one selected, must be diff. Create new Instrument
-      my $x_axis2_instrument = [];
       if(@x_axes_selected > 1){
 	      foreach my $instrument (@instruments){
 		      if($x_axes_selected[1] eq $instrument){
-			      $x_axis2_instrument = $instrument;
+			      $x_axis2_instrument = CtdPlot::Model::Instrument->new($cnv_fullpath_name,$instrument);
 			      last;
 		      }
 	      }
-	      my $diff_instr = CtdPlot::Model::Instrument->new($cnv_fullpath_name,$x_axis2_instrument);
-	      my $instrument_name = "$x_axes_selected[0] - $x_axes_selected[1]";
-	      $diff_instr->{_name} = $instrument_name;
-	      push(@instruments,$diff_instr);
-	      $plots[$index]->x_instrument($diff_instr);
+	      #overwrite with new instrument
+	      $plots[$index]->x_instrument($x_axis2_instrument);
       }
 
       #find y instrument associated with y-axis name given from user
@@ -149,17 +146,27 @@ get '/multi' => sub ($c) {
       @{$plots[$index]->{x_values} } = @{ dclone($x_values) };
       if($Debug){
           foreach my $val (@{$plots[$index]->{x_values}}) {
-      		  print "x_val: $val\n";
+		  #print "x_val: $val\n";
       	  }
       }
       @{$plots[$index]->{y_values} } = @{ dclone($y_values) };
+      if($Debug){
+          foreach my $val (@{$plots[$index]->{y_values}}) {
+		  #print "y_val: $val\n";
+      	  }
+      }
 
       $index++;
   }
   
-  my $graph_title = $x_axis_instrument->{_name} . " vs. " .  $y_axis_instrument->{_name};
-  my $graph_x_label = $x_axis_instrument->{_property} . " [" . $x_axis_instrument->{_units} . "]";
-  my $graph_y_label = $y_axis_instrument->{_property} . " [" . $y_axis_instrument->{_units} . "]";
+  my $graph_title;
+  if(@x_axes_selected > 1){
+	  $graph_title = $x_axis_instrument->{_name} . " - " . $x_axis2_instrument->{_name}  . " vs. " .  $y_axis_instrument->{_name};
+  }else{
+	  $graph_title = $x_axis_instrument->{_name} . " vs. " .  $y_axis_instrument->{_name};
+  }
+  my $graph_x_label = $y_axis_instrument->{_property} . " [" . $y_axis_instrument->{_units} . "]";
+  my $graph_y_label = $x_axis_instrument->{_property} . " [" . $x_axis_instrument->{_units} . "]";
   
 
   #Send data to client 
