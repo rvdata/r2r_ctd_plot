@@ -4,6 +4,10 @@ To install Mojolicious as sudo or as root:
 As per mojolicious.org: 
 	sudo curl -L https://cpanmin.us | perl - -M https://cpan.metacpan.org -n Mojolicious
 
+Modules required:
+cpan Array::Utils
+cpan Class::Struct
+
 Note: The app uses these libraries but they are shipped with the source code:
 1. https://plotly.com/javascript 
 2. https://fabianlindfors.se/multijs/
