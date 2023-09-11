@@ -1,3 +1,12 @@
+var PlotlyGraph = function() {
+	this.title;
+	this.x_label;
+	this.y_label;
+	this.addTitle = function(title){ this.title = title; }
+	this.addXLabel = function(label){ this.x_label = label; }
+	this.addYLabel = function(label){ this.y_label = label; }
+}
+
 var Instrument = function() {
 	this.name;
 	this.units;
@@ -19,6 +28,7 @@ var Plot = function() {
 	this.addYValue = function(y_value){ this.y_values.push(y_value); }
 }
 
+graph = [];
 instrument = [];
 plot = [];
 stations_selected = [];
@@ -815,9 +825,9 @@ function processCustomData() {
 	Object.keys(plot).forEach(key => {
 		if(first_plot){
 			first_plot=false;
-			title = plot[key].x_instrument.variable + " vs " + plot[key].y_instrument.variable;
-			yLabel = plot[key].x_instrument.variable  + " [" + plot[key].x_instrument.units + "]";;
-			xLabel = plot[key].y_instrument.variable  + " [" + plot[key].y_instrument.units + "]";;
+			title = plotly_graph.title;
+			yLabel = plotly_graph.y_label;
+			xLabel = plotly_graph.x_label;
 			graph = new Graph(title, yLabel, xLabel);
 		}
 	}); 

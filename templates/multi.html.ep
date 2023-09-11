@@ -101,4 +101,8 @@ displayMultiSelect();
     plot["<%= $pl->station %>"].addYValue("<%= $val %>");
     % }
 % }
+ plotly_graph = new PlotlyGraph(); 
+ plotly_graph.addTitle("<%= $graph_title %>"); 
+ plotly_graph.addXLabel("<%= $graph_xlabel %>"); 
+ plotly_graph.addYLabel("<%= $graph_ylabel %>"); 
 </script>

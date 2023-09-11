@@ -5,18 +5,16 @@ use Mojolicious::Lite -signatures;
 use Class::Struct;
 use lib qw(lib);
 use Storable qw(dclone);
-#use Mojo::JSON qw(decode_json encode_json);
-#use JSON;
 use CtdPlot::Model::InstrListFromCNV;
 use CtdPlot::Model::CNV2CSV;
 use CtdPlot::Model::getDataFromCNV;
 use CtdPlot::Model::getDeltaDataFromCNV;
-use Array::Utils;
 use CtdPlot::Model::Instrument;
+use Array::Utils;
 
 my $datadir = "/home/data/ctd/";
 my $index=0;
-my $Debug=1;
+my $Debug=0;
 #if -d option given, override datadir and remove from ARGV before passing to mojo
 foreach my $arg (@ARGV) {
     if($ARGV[$index] eq "-d"){
@@ -59,19 +57,11 @@ foreach my $cnv_filename (@cnv_filenames){
     @instruments = Array::Utils::unique(@instruments, @instrs);
 }
 
-foreach my $instr (@instruments){
-    print "instrumnet: " . $instr . "\n" if $Debug;
-}
-
 get '/' => sub ($c) {
        	$c->render;
 } => 'index';
 
 get '/multi' => sub ($c) {
-  foreach my $instr (@instruments){
-	  print "Intrument: " . $instr . "\n" if $Debug;
-  }
-
   my @cnv_files_selected=();
   my @x_axes_selected=(); #can be 2 if diff selected
   my @plots=();
@@ -101,6 +91,8 @@ get '/multi' => sub ($c) {
 
   my $index=0;
   #get selected data set from each cnv file
+  my $x_axis_instrument;
+  my $y_axis_instrument;
   foreach my $cnv_file (@cnv_files_selected) {
       my $x_values;
       my $y_values;
@@ -112,7 +104,6 @@ get '/multi' => sub ($c) {
       $plots[$index]->station($cnv_without_extension);
 
       #search instrument list for instrument selected by user, used for plotting x-axis
-      my $x_axis_instrument = [];
       foreach my $instrument (@instruments){
 	      if($x_axes_selected[0] eq $instrument){
 		      $x_axis_instrument = CtdPlot::Model::Instrument->new($cnv_fullpath_name, $instrument);
@@ -138,7 +129,6 @@ get '/multi' => sub ($c) {
       }
 
       #find y instrument associated with y-axis name given from user
-      my $y_axis_instrument = [];
       foreach my $instrument (@instruments){
           if($y_axis eq $instrument){
 	      $y_axis_instrument = CtdPlot::Model::Instrument->new($cnv_fullpath_name, $instrument);
@@ -153,23 +143,29 @@ get '/multi' => sub ($c) {
       if(@x_axes_selected > 1){
 	      ($x_values,$y_values) = $c->cnvdeltadata->get_delta_data($cnv_fullpath_name,$x_axis_instrument,$x_axis2_instrument,$y_axis_instrument);
       } else {
-	      print "x_axis_instrument: " .  $x_axis_instrument->{_name} . "\n";
 	      ($x_values,$y_values) = $c->cnvdata->get_data($cnv_fullpath_name,$x_axis_instrument,$y_axis_instrument);
       }
 
       @{$plots[$index]->{x_values} } = @{ dclone($x_values) };
       if($Debug){
           foreach my $val (@{$plots[$index]->{x_values}}) {
-		  print "x_val: $val\n";
-	  }
+      		  print "x_val: $val\n";
+      	  }
       }
       @{$plots[$index]->{y_values} } = @{ dclone($y_values) };
 
       $index++;
   }
   
+  my $graph_title = $x_axis_instrument->{_name} . " vs. " .  $y_axis_instrument->{_name};
+  my $graph_x_label = $x_axis_instrument->{_property} . " [" . $x_axis_instrument->{_units} . "]";
+  my $graph_y_label = $y_axis_instrument->{_property} . " [" . $y_axis_instrument->{_units} . "]";
+  
 
   #Send data to client 
+  $c->stash(graph_title		=> $graph_title);
+  $c->stash(graph_xlabel	=> $graph_x_label);
+  $c->stash(graph_ylabel	=> $graph_y_label);
   $c->stash(plots		=> \@plots);
   $c->stash(stafilelist		=> \@cnv_filenames);
   $c->stash(instrumentlist	=> \@instruments);

@@ -12,6 +12,7 @@ sub new {
             _column 	=> 0,
             _property 	=> "",
             _units 	=> "",
+            _exists 	=> 0,
     };
 
     bless $self, $class;
@@ -21,10 +22,11 @@ sub new {
 
 sub _init {
         my ($self) = @_;
-	my ($numb, $extra_info,$units);
+	my ($numb,$extra_info,$units);
 	open (IN, "$self->{_cnv_file}")  or die "ERROR: cannot open $self->{_cnv_file}";
         while(<IN>){
                 if(/\# name.*$self->{_name}/){
+			print "MATCH: $self->{_name}\n";
                         my ($first_half, $second_half ) = split(':');
                         ($numb, my $instrument_name) = ($first_half =~ /\# name (\d{1,2}) = (\D.*)/);
                         if(/.*\[.*\]/){
@@ -35,6 +37,7 @@ sub _init {
                             $extra_info =~ s/\R//g;
                             $units="";
                         }
+			$self->{_exists} = 1;
 			last;
                 }
         }
