@@ -93,7 +93,7 @@ get '/multi' => sub ($c) {
   #get selected data set from each cnv file
   my $x_axis_instrument;
   my $y_axis_instrument;
-  my $x_axis2_instrument = [];
+  my $x_axis2_instrument;
   foreach my $cnv_file (@cnv_files_selected) {
       my $x_values;
       my $y_values;
@@ -146,13 +146,13 @@ get '/multi' => sub ($c) {
       @{$plots[$index]->{x_values} } = @{ dclone($x_values) };
       if($Debug){
           foreach my $val (@{$plots[$index]->{x_values}}) {
-		  #print "x_val: $val\n";
+		  print "x_val: $val\n";
       	  }
       }
       @{$plots[$index]->{y_values} } = @{ dclone($y_values) };
       if($Debug){
           foreach my $val (@{$plots[$index]->{y_values}}) {
-		  #print "y_val: $val\n";
+		  print "y_val: $val\n";
       	  }
       }
 
@@ -161,7 +161,7 @@ get '/multi' => sub ($c) {
   
   my $graph_title;
   if(@x_axes_selected > 1){
-	  $graph_title = $x_axis_instrument->{_name} . " - " . $x_axis2_instrument->{_name}  . " vs. " .  $y_axis_instrument->{_name};
+	  $graph_title = "(" .$x_axis_instrument->{_name} . " - " . $x_axis2_instrument->{_name}  . ") vs. " .  $y_axis_instrument->{_name};
   }else{
 	  $graph_title = $x_axis_instrument->{_name} . " vs. " .  $y_axis_instrument->{_name};
   }

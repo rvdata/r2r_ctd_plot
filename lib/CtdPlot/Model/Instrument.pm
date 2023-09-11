@@ -26,7 +26,6 @@ sub _init {
 	open (IN, "$self->{_cnv_file}")  or die "ERROR: cannot open $self->{_cnv_file}";
         while(<IN>){
                 if(/\# name.*$self->{_name}/){
-			print "MATCH: $self->{_name}\n";
                         my ($first_half, $second_half ) = split(':');
                         ($numb, my $instrument_name) = ($first_half =~ /\# name (\d{1,2}) = (\D.*)/);
                         if(/.*\[.*\]/){
