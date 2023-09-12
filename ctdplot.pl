@@ -15,7 +15,7 @@ use Array::Utils;
 
 my $datadir = "/home/data/ctd/";
 my $index=0;
-my $Debug=0;
+my $Debug=1;
 #if -d option given, override datadir and remove from ARGV before passing to mojo
 foreach my $arg (@ARGV) {
     if($ARGV[$index] eq "-d"){
@@ -58,12 +58,19 @@ foreach my $cnv_filename (@cnv_filenames){
     my @instrs = CtdPlot::Model::InstrListFromCNV->get("${datadir}${cnv_filename}");
     @instruments_multi = Array::Utils::unique(@instruments_multi, @instrs);
 }
+@instruments_multi = sort(@instruments_multi);
 
 get '/' => sub ($c) {
        	$c->render;
 } => 'index';
 
 get '/multi' => sub ($c) {
+  print "\n\n";
+  if($Debug){
+      foreach my $instrument (@instruments_multi){
+	  print "INSTRUMENT: $instrument\n";
+      }
+  }
   my @cnv_files_selected=();
   my @x_axes_selected=(); #can be 2 if diff selected
   my @plots=();
@@ -110,6 +117,7 @@ get '/multi' => sub ($c) {
       foreach my $instrument (@instruments_multi){
 	      if($x_axes_selected[0] eq $instrument){
 		      $x_axis_instrument = CtdPlot::Model::Instrument->new($cnv_fullpath_name, $instrument);
+                      print "x-instrument: $instrument\n" if $Debug;
 		      last;
 	      }
       }
@@ -119,6 +127,7 @@ get '/multi' => sub ($c) {
       if(@x_axes_selected > 1){
 	      foreach my $instrument (@instruments_multi){
 		      if($x_axes_selected[1] eq $instrument){
+                              print "x2-instrument: $instrument\n" if $Debug;
 			      $x_axis2_instrument = CtdPlot::Model::Instrument->new($cnv_fullpath_name,$instrument);
 			      last;
 		      }
@@ -130,6 +139,7 @@ get '/multi' => sub ($c) {
       #find y instrument associated with y-axis name given from user
       foreach my $instrument (@instruments_multi){
           if($y_axis eq $instrument){
+              print "y-instrument: $instrument\n" if $Debug;
 	      $y_axis_instrument = CtdPlot::Model::Instrument->new($cnv_fullpath_name, $instrument);
               last;
           }
@@ -148,13 +158,13 @@ get '/multi' => sub ($c) {
       @{$plots[$index]->{x_values} } = @{ dclone($x_values) };
       if($Debug){
           foreach my $val (@{$plots[$index]->{x_values}}) {
-		  print "x_val: $val\n";
+		  #print "x_val: $val\n";
       	  }
       }
       @{$plots[$index]->{y_values} } = @{ dclone($y_values) };
       if($Debug){
           foreach my $val (@{$plots[$index]->{y_values}}) {
-		  print "y_val: $val\n";
+		  #print "y_val: $val\n";
       	  }
       }
 
@@ -195,6 +205,11 @@ get '/single' => sub ($c) {
   helper instr_list => sub { state $instr_list = CtdPlot::Model::InstrListFromCNV2->new };
   #get list of instruments from cnv file
   @instruments_single = $c->instr_list->get($input_filename);
+  if($Debug){
+      foreach my $instrument (@instruments_single){
+	  print "INSTRUMENT: " . $instrument->name . "\n";
+      }
+  }
 
   
   my $out_file = "public/ctd.dat";
