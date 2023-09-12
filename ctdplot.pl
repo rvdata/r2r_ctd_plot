@@ -6,6 +6,7 @@ use Class::Struct;
 use lib qw(lib);
 use Storable qw(dclone);
 use CtdPlot::Model::InstrListFromCNV;
+use CtdPlot::Model::InstrListFromCNV2;
 use CtdPlot::Model::CNV2CSV;
 use CtdPlot::Model::getDataFromCNV;
 use CtdPlot::Model::getDeltaDataFromCNV;
@@ -42,7 +43,8 @@ struct( Plot => {
 });
 
 
-my @instruments;
+my @instruments_multi;
+my @instruments_single;
 my $instruments = [];
 my @cnv_info;
 
@@ -54,7 +56,7 @@ close DATADIR;
 #search thru all files to get a complete list of all instruments across all cnv files in the dir
 foreach my $cnv_filename (@cnv_filenames){
     my @instrs = CtdPlot::Model::InstrListFromCNV->get("${datadir}${cnv_filename}");
-    @instruments = Array::Utils::unique(@instruments, @instrs);
+    @instruments_multi = Array::Utils::unique(@instruments_multi, @instrs);
 }
 
 get '/' => sub ($c) {
@@ -105,7 +107,7 @@ get '/multi' => sub ($c) {
       $plots[$index]->station($cnv_without_extension);
 
       #search instrument list for instrument selected by user, used for plotting x-axis
-      foreach my $instrument (@instruments){
+      foreach my $instrument (@instruments_multi){
 	      if($x_axes_selected[0] eq $instrument){
 		      $x_axis_instrument = CtdPlot::Model::Instrument->new($cnv_fullpath_name, $instrument);
 		      last;
@@ -115,7 +117,7 @@ get '/multi' => sub ($c) {
 
       #if there's more than one selected, must be diff. Create new Instrument
       if(@x_axes_selected > 1){
-	      foreach my $instrument (@instruments){
+	      foreach my $instrument (@instruments_multi){
 		      if($x_axes_selected[1] eq $instrument){
 			      $x_axis2_instrument = CtdPlot::Model::Instrument->new($cnv_fullpath_name,$instrument);
 			      last;
@@ -126,7 +128,7 @@ get '/multi' => sub ($c) {
       }
 
       #find y instrument associated with y-axis name given from user
-      foreach my $instrument (@instruments){
+      foreach my $instrument (@instruments_multi){
           if($y_axis eq $instrument){
 	      $y_axis_instrument = CtdPlot::Model::Instrument->new($cnv_fullpath_name, $instrument);
               last;
@@ -175,7 +177,7 @@ get '/multi' => sub ($c) {
   $c->stash(graph_ylabel	=> $graph_y_label);
   $c->stash(plots		=> \@plots);
   $c->stash(stafilelist		=> \@cnv_filenames);
-  $c->stash(instrumentlist	=> \@instruments);
+  $c->stash(instrumentlist	=> \@instruments_multi);
   $c->render(template		=> 'multi');
 };
 
@@ -190,20 +192,20 @@ get '/single' => sub ($c) {
 
   my $input_filename = "${datadir}/${filename}";
   # Helper to lazy initialize and store instrument list object model
-  helper instr_list => sub { state $instr_list = CtdPlot::Model::InstrListFromCNV->new };
+  helper instr_list => sub { state $instr_list = CtdPlot::Model::InstrListFromCNV2->new };
   #get list of instruments from cnv file
-  @instruments = $c->instr_list->get($input_filename);
+  @instruments_single = $c->instr_list->get($input_filename);
 
   
   my $out_file = "public/ctd.dat";
   # Helper to lazy initialize and store csv object model
   helper cnv2csv => sub { state $cnv2csv = CtdPlot::Model::CNV2CSV->new };
   #convert cnv to csv for plotly
-  @cnv_info = $c->cnv2csv->convert($input_filename,$out_file,\@instruments);
+  @cnv_info = $c->cnv2csv->convert($input_filename,$out_file,\@instruments_single);
 
   $c->stash(fileSelection	=> $filename);
   $c->stash(stafilelist		=> \@stafiles);
-  $c->stash(instrumentlist	=> \@instruments);
+  $c->stash(instrumentlist	=> \@instruments_single);
   $c->stash(cnv_info		=> \@cnv_info);
   $c->render( template		=> 'single');
 };
