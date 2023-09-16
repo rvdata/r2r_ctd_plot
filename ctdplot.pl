@@ -103,6 +103,11 @@ get '/multi' => sub ($c) {
   my $x_axis_instrument;
   my $y_axis_instrument;
   my $x_axis2_instrument;
+  my $graph_title;
+  my $graph_x_label;
+  my $graph_y_label;
+  my $graph_xlabel_not_set = 1;
+  my $graph_ylabel_not_set = 1;
   foreach my $cnv_file (@cnv_files_selected) {
       my $x_values;
       my $y_values;
@@ -168,18 +173,36 @@ get '/multi' => sub ($c) {
       	  }
       }
 
+      print "cnv: $cnv_without_extension\n";
+  
+      if(@x_axes_selected > 1){
+	  $graph_title = "(" .$x_axis_instrument->{_property} . " - " . $x_axis2_instrument->{_property}  . ") vs. " .  $y_axis_instrument->{_property};
+          if(!($x_axis_instrument->{_exists} && $x_axis2_instrument->{_exists} && $y_axis_instrument->{_exists})){ 
+              $graph_x_label = "N/A";
+              $graph_y_label = "N/A";
+	  }else{
+              $graph_x_label = $y_axis_instrument->{_property} . " [" . $y_axis_instrument->{_units} . "]";
+              $graph_y_label = $x_axis_instrument->{_property} . " [" . $x_axis_instrument->{_units} . "]";
+          }
+      }else{
+          if($y_axis_instrument->{_exists} && $graph_ylabel_not_set){ 
+		  $graph_ylabel_not_set = 0; 
+		  $graph_x_label = $y_axis_instrument->{_property} . " [" . $y_axis_instrument->{_units} . "]";
+          }
+          if($x_axis_instrument->{_exists} && $graph_xlabel_not_set){ 
+		  $graph_xlabel_not_set = 0; 
+		  $graph_y_label = $x_axis_instrument->{_property} . " [" . $x_axis_instrument->{_units} . "]";
+          }
+      }
       $index++;
   }
-  
-  my $graph_title;
-  if(@x_axes_selected > 1){
-	  $graph_title = "(" .$x_axis_instrument->{_name} . " - " . $x_axis2_instrument->{_name}  . ") vs. " .  $y_axis_instrument->{_name};
+  if($graph_ylabel_not_set || $graph_xlabel_not_set){ 
+	  $graph_x_label = "N/A"; 
+	  $graph_y_label = "N/A"; 
+	  $graph_title = "Data Not Available";
   }else{
-	  $graph_title = $x_axis_instrument->{_name} . " vs. " .  $y_axis_instrument->{_name};
+	  $graph_title = $x_axis_instrument->{_property} . " vs. " .  $y_axis_instrument->{_property};
   }
-  my $graph_x_label = $y_axis_instrument->{_property} . " [" . $y_axis_instrument->{_units} . "]";
-  my $graph_y_label = $x_axis_instrument->{_property} . " [" . $x_axis_instrument->{_units} . "]";
-  
 
   #Send data to client 
   $c->stash(graph_title		=> $graph_title);
