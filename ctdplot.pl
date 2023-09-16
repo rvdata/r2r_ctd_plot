@@ -109,6 +109,7 @@ get '/multi' => sub ($c) {
   my $graph_x_property;
   my $graph_y_property;
   my $graph_xlabel_not_set = 1;
+  my $graph_x2label_not_set = 1;
   my $graph_ylabel_not_set = 1;
   foreach my $cnv_file (@cnv_files_selected) {
       my $x_values;
@@ -178,44 +179,55 @@ get '/multi' => sub ($c) {
       print "cnv: $cnv_without_extension\n";
   
       if(@x_axes_selected > 1){
-	  $graph_title = "(" .$x_axis_instrument->{_property} . " - " . $x_axis2_instrument->{_property}  . ") vs. " .  $y_axis_instrument->{_property};
-          if(!($x_axis_instrument->{_exists} && $x_axis2_instrument->{_exists} && $y_axis_instrument->{_exists})){ 
-              $graph_x_label = "N/A";
-              $graph_y_label = "N/A";
-	  }else{
-              $graph_x_label = $y_axis_instrument->{_property} . " [" . $y_axis_instrument->{_units} . "]";
-              $graph_y_label = $x_axis_instrument->{_property} . " [" . $x_axis_instrument->{_units} . "]";
-          }
-      }else{
-          print "x_exists: $x_axis_instrument->{_exists}\n";
-	  print "y_exists:   $y_axis_instrument->{_exists}\n";
-	  print "y labels set:  $graph_ylabel_not_set\n";
-	  print "x labels set:  $graph_xlabel_not_set\n";
           if($y_axis_instrument->{_exists} && $graph_ylabel_not_set){ 
 		  $graph_ylabel_not_set = 0; 
 		  $graph_x_property = $y_axis_instrument->{_property};
 		  $graph_x_label = $graph_x_property . " [" . $y_axis_instrument->{_units} . "]";
-		  print "SETTING X LABEL: $graph_x_label\n";
           }
           if($x_axis_instrument->{_exists} && $graph_xlabel_not_set){ 
 		  $graph_xlabel_not_set = 0; 
 		  $graph_y_property = $x_axis_instrument->{_property};
 		  $graph_y_label = $graph_y_property . " [" . $x_axis_instrument->{_units} . "]";
-		  print "SETTING Y LABEL: $graph_y_label\n";
+          }
+          if($x_axis2_instrument->{_exists} && $graph_x2label_not_set){ 
+		  $graph_x2label_not_set = 0; 
+		  $graph_y_property = $x_axis_instrument->{_property};
+		  $graph_y_label = $graph_y_property . " [" . $x_axis_instrument->{_units} . "]";
+          }
+
+
+      }else{
+          if($y_axis_instrument->{_exists} && $graph_ylabel_not_set){ 
+		  $graph_ylabel_not_set = 0; 
+		  $graph_x_property = $y_axis_instrument->{_property};
+		  $graph_x_label = $graph_x_property . " [" . $y_axis_instrument->{_units} . "]";
+          }
+          if($x_axis_instrument->{_exists} && $graph_xlabel_not_set){ 
+		  $graph_xlabel_not_set = 0; 
+		  $graph_y_property = $x_axis_instrument->{_property};
+		  $graph_y_label = $graph_y_property . " [" . $x_axis_instrument->{_units} . "]";
           }
       }
       $index++;
   }
-  if($graph_ylabel_not_set || $graph_xlabel_not_set){ 
+  if(@x_axes_selected > 1){
+      if($graph_ylabel_not_set || $graph_xlabel_not_set || $graph_x2label_not_set){ 
 	  $graph_x_label = "N/A"; 
 	  $graph_y_label = "N/A"; 
 	  $graph_title = "Data Not Available";
-	  print "Data Not Available\n";
-  }else{
-	  print "x_prop: " . $x_axis_instrument->{_property} . "\n";
-	  print "y_prop: " . $y_axis_instrument->{_property} . "\n";
+      }else{
 	  $graph_title = $x_axis_instrument->{_property} . " vs. " .  $y_axis_instrument->{_property};
 	  $graph_title = $graph_x_property . " vs. " .  $graph_y_property;
+      }
+  } else {
+      if($graph_ylabel_not_set || $graph_xlabel_not_set){ 
+	  $graph_x_label = "N/A"; 
+	  $graph_y_label = "N/A"; 
+	  $graph_title = "Data Not Available";
+      }else{
+	  $graph_title = $x_axis_instrument->{_property} . " vs. " .  $y_axis_instrument->{_property};
+	  $graph_title = $graph_x_property . " vs. " .  $graph_y_property;
+      }
   }
 
   #Send data to client 
