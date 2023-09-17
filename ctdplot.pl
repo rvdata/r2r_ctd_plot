@@ -142,8 +142,6 @@ get '/multi' => sub ($c) {
 			      last;
 		      }
 	      }
-	      #overwrite with new instrument
-	      #$plots[$index]->x_instrument($x_axis2_instrument);
       }
 
       #find y instrument associated with y-axis name given from user
@@ -178,7 +176,6 @@ get '/multi' => sub ($c) {
       	  }
       }
 
-  
       if(@x_axes_selected > 1){
           if($y_axis_instrument->{_exists} && !$graph_ylabel_set){ 
 		  $graph_ylabel_set = 1; 
@@ -189,7 +186,7 @@ get '/multi' => sub ($c) {
 		  $graph_xlabel_set = 1; 
 		  $graph_y_property = $x_axis_instrument->{_name};
 		  $graph_y2_property = $x_axis2_instrument->{_name};
-		  $graph_y_label = $graph_y_property . " [" . $x_axis_instrument->{_units} . "]";
+		  $graph_y_label = $graph_y_property . "-" . $graph_y2_property . " [" . $x_axis_instrument->{_units} . "]";
           }else{
 		  $x_axis_instrument->{_exists} = 0;
 	  }
