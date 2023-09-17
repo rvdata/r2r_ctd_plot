@@ -108,9 +108,9 @@ get '/multi' => sub ($c) {
   my $graph_y_label;
   my $graph_x_property;
   my $graph_y_property;
-  my $graph_xlabel_not_set = 1;
-  my $graph_x2label_not_set = 1;
-  my $graph_ylabel_not_set = 1;
+  my $graph_xlabel_set = 0;
+  my $graph_x2label_set = 0;
+  my $graph_ylabel_set = 0;
   foreach my $cnv_file (@cnv_files_selected) {
       my $x_values;
       my $y_values;
@@ -126,6 +126,7 @@ get '/multi' => sub ($c) {
 	      if($x_axes_selected[0] eq $instrument){
 		      $x_axis_instrument = CtdPlot::Model::Instrument->new($cnv_fullpath_name, $instrument);
                       print "x-instrument: $instrument\n" if $Debug;
+                      print "x-instrument exists: $x_axis_instrument->{_exists}\n" if $Debug;
 		      last;
 	      }
       }
@@ -141,7 +142,7 @@ get '/multi' => sub ($c) {
 		      }
 	      }
 	      #overwrite with new instrument
-	      $plots[$index]->x_instrument($x_axis2_instrument);
+	      #$plots[$index]->x_instrument($x_axis2_instrument);
       }
 
       #find y instrument associated with y-axis name given from user
@@ -176,51 +177,52 @@ get '/multi' => sub ($c) {
       	  }
       }
 
-      print "cnv: $cnv_without_extension\n";
-  
       if(@x_axes_selected > 1){
-          if($y_axis_instrument->{_exists} && $graph_ylabel_not_set){ 
-		  $graph_ylabel_not_set = 0; 
+          if($y_axis_instrument->{_exists} && !$graph_ylabel_set){ 
+		  $graph_ylabel_set = 1; 
 		  $graph_x_property = $y_axis_instrument->{_property};
 		  $graph_x_label = $graph_x_property . " [" . $y_axis_instrument->{_units} . "]";
           }
-          if($x_axis_instrument->{_exists} && $graph_xlabel_not_set){ 
-		  $graph_xlabel_not_set = 0; 
+          if($x_axis_instrument->{_exists} && !$graph_xlabel_set){ 
+		  $graph_xlabel_set = 1; 
 		  $graph_y_property = $x_axis_instrument->{_property};
 		  $graph_y_label = $graph_y_property . " [" . $x_axis_instrument->{_units} . "]";
           }
-          if($x_axis2_instrument->{_exists} && $graph_x2label_not_set){ 
-		  $graph_x2label_not_set = 0; 
-		  $graph_y_property = $x_axis_instrument->{_property};
-		  $graph_y_label = $graph_y_property . " [" . $x_axis_instrument->{_units} . "]";
-          }
-
-
       }else{
-          if($y_axis_instrument->{_exists} && $graph_ylabel_not_set){ 
-		  $graph_ylabel_not_set = 0; 
+          if($y_axis_instrument->{_exists} && !$graph_ylabel_set){ 
+		  $graph_ylabel_set = 1; 
 		  $graph_x_property = $y_axis_instrument->{_property};
 		  $graph_x_label = $graph_x_property . " [" . $y_axis_instrument->{_units} . "]";
           }
-          if($x_axis_instrument->{_exists} && $graph_xlabel_not_set){ 
-		  $graph_xlabel_not_set = 0; 
+          if($x_axis_instrument->{_exists} && !$graph_xlabel_set){ 
+		  $graph_xlabel_set = 1; 
 		  $graph_y_property = $x_axis_instrument->{_property};
 		  $graph_y_label = $graph_y_property . " [" . $x_axis_instrument->{_units} . "]";
           }
       }
       $index++;
   }
+
+
+
   if(@x_axes_selected > 1){
-      if($graph_ylabel_not_set || $graph_xlabel_not_set || $graph_x2label_not_set){ 
+      my $all_data_exists = 1;
+      foreach my $plot (@plots) { 
+	  if( !($plot->x_instrument->{_exists} && $plot->y_instrument->{_exists}) ) { 
+		  $all_data_exists = 0; 
+		  last;
+	  }
+      }
+      if($all_data_exists){
+	  $graph_title = $x_axis_instrument->{_property} . " vs. " .  $y_axis_instrument->{_property};
+	  $graph_title = $graph_x_property . " vs. " .  $graph_y_property;
+      }else{
 	  $graph_x_label = "N/A"; 
 	  $graph_y_label = "N/A"; 
 	  $graph_title = "Data Not Available";
-      }else{
-	  $graph_title = $x_axis_instrument->{_property} . " vs. " .  $y_axis_instrument->{_property};
-	  $graph_title = $graph_x_property . " vs. " .  $graph_y_property;
       }
   } else {
-      if($graph_ylabel_not_set || $graph_xlabel_not_set){ 
+      if(!$graph_ylabel_set || !$graph_xlabel_set){ 
 	  $graph_x_label = "N/A"; 
 	  $graph_y_label = "N/A"; 
 	  $graph_title = "Data Not Available";
