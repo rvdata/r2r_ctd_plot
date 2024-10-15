@@ -26,6 +26,7 @@ Output directory: Path to the processed .cnv ctd data file
 Output file: Name of the file which usually should mention the ctd cast name
 ```
 
+![Screenshot of FileSetup](images/filesetup.png)
 
 On the Data Conversion window, **Data Setup** tab:
 ```
@@ -43,6 +44,8 @@ Recommend Variables: Depth, Latitude [deg], Longitude [deg], Conductivity [S/m] 
 
 Start Process
 ```
+![Screenshot of OutputVar](images/outputVariables.png)
+
 
 Step 2: Download this repository
 -----------------------------------------------------
