@@ -12,36 +12,37 @@ Step 1: SBEDataProcessing Software
 **Run -> Data Conversion**
 
 On the Data Conversion window, **File Setup** tab: 
+```
+Program setup file: This is the path to the .psa file which can be found in the raw ctd data directory
 
-*Program setup file:* This is the path to the .psa file which can be found in the raw ctd data directory
+Instrument configuration file: This points to the path of the .XMLCON file for a ctd cast
 
-*Instrument configuration file:* This points to the path of the .XMLCON file for a ctd cast
+Input Directory: Path to the raw ctd data directory
 
-*Input Directory:* Path to the raw ctd data directory
+Input file: the .hex file in the input directory for a ctd cast
 
-*Input file:* the .hex file in the input directory for a ctd cast
+Output directory: Path to the processed .cnv ctd data file
 
-*Output directory:* Path to the processed .cnv ctd data file
-
-*Output file:* Name of the file which usually should mention the ctd cast name
-
+Output file: Name of the file which usually should mention the ctd cast name
+```
 
 
 On the Data Conversion window, **Data Setup** tab:
+```
+Output format: ASCII
 
-*Output format:* ASCII
+Convert data from: Upcast and Downcast
 
-*Convert data from:* Upcast and Downcast
+Create file type: .CNV file only
 
-*Create file type:* .CNV file only
-
-*Select Output Variables Tab:*
+Select Output Variables Tab:
 Add any additional variables required. Remove the Time, System [seconds] variable.
 
 Recommend Variables: Depth, Latitude [deg], Longitude [deg], Conductivity [S/m] 1&2, Salinity [PSU] 1&2, Temperature [ITS-90, deg C] 1&2, Oxygen [ml/l] [umol/kg], Pressure [db], 
 
 
-**Start Process.**
+Start Process
+```
 
 Step 2: Download this repository
 -----------------------------------------------------
